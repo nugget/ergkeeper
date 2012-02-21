@@ -1,0 +1,23 @@
+Options ExecCGI FollowSymLinks
+
+# ErrorDocument 400 /errors/400.php
+# ErrorDocument 401 /errors/401.php
+# ErrorDocument 403 /errors/403.php
+# ErrorDocument 404 /errors/404.php
+
+<Files "*.inc">
+ Order Deny,Allow
+ Deny from All
+</Files>
+
+<Files ".ht*">
+ Order Deny,Allow
+ Deny from All
+</Files>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^([^\.\?/]+)$	$1.rvt		[QSA]
+</IfModule>

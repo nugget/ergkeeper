@@ -8,4 +8,4 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded ergkeeper 1.0 [list source [file join $dir common.tcl]]\n[list source [file join $dir config.tcl]]\n[list source [file join $dir database.tcl]]\n[list source [file join $dir web.tcl]]
+package ifneeded ergkeeper 1.0 [list source [file join $dir common.tcl]]\n[list source [file join $dir config.tcl]]\n[list source [file join $dir database.tcl]]\n[list source [file join $dir runkeeper.tcl]]\n[list source [file join $dir web.tcl]]\n[list source [file join $dir oauth.tcl]]

@@ -1,3 +1,14 @@
 <?
+	package require ergkeeper
 
+	page_init
+	page_response
+	page_head
+
+	if {![info exists ::user(id)]} {
+		puts [runkeeper_login_button]
+	}
+
+	page_foot
+	page_term
 ?>

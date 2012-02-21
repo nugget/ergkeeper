@@ -38,4 +38,39 @@ proc sql_exec {conn sql} {
 	return $success
 }
 
+proc sql_insert_from_array {table arrvar {idvar ""}} {
+	upvar 1 $arrvar arr
+
+	set fname [list]
+	set fdata [list]
+
+	foreach f [array names arr] {
+		lappend fname $f
+		lappend fdata [pg_quote $arr($f)]
+	}
+
+	set sql "INSERT INTO $table ([join $fname ","]) VALUES ([join $fdata ","])"
+	if {$idvar != ""} {
+		append sql " RETURNING $idvar as id"
+	} else {
+		append sql " RETURNING 1 as id"
+	}
+
+	set success 0
+	pg_select $::db $sql buf {
+		return $buf(id)
+	}
+
+	return $success
+}
+
+proc load_config {} {
+	unset -nocomplain ::config
+	array set ::config {}
+
+	pg_select $::db "SELECT item,value FROM config" buf {
+		set ::config($buf(item)) $buf(value)
+	}
+}
+
 package provide ergkeeper 1.0

@@ -1,0 +1,29 @@
+<?
+	package require ergkeeper
+
+	page_init
+
+	page_response
+	load_env
+
+	page_head
+
+	switch $response(state) {
+		runkeeper {
+			set token [get_oauth_token_from_code $response(code)]
+
+			if {$token != ""} {
+				set_session_token $response(state) $token
+			}
+		}
+
+		default {
+			puts "Unknown Callback Site"
+			page_term
+		}
+	}
+
+	page_foot
+
+	page_term
+?>

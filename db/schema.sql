@@ -31,9 +31,9 @@ CREATE TABLE users (
     changed timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
     deleted timestamp(0) without time zone,
 	runkeeper_id bigint,
-	runkeeper_oath_token varchar,
+	runkeeper_oauth_token varchar,
 	facebook_id bigint,
-	facebook_oath_token varchar,
+	facebook_oauth_token varchar,
 	PRIMARY KEY(id)
 );
 GRANT ALL ON users_id_seq TO c2rkwww;
