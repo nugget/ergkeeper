@@ -11,7 +11,7 @@ proc get_oauth_token_from_code {code} {
 
 	set query [::http::formatQuery grant_type authorization_code code $code client_id $::config(rkapi_client_id) client_secret $::config(rkapi_client_secret) redirect_uri "$::config(base_url)login"]
 
-	puts "<code>[request_uri runkeeper]?$query</code>"
+	# puts "<code>[request_uri runkeeper]?$query</code>"
 
 	set fp [::http::geturl [request_uri runkeeper] -query $query -timeout 15000 ]
 	set status [::http::status $fp]

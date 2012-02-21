@@ -49,6 +49,16 @@ proc load_user {id} {
 	if {[info exists id] && $id != "" && [ctype digit $id]} {
 		pg_select $::db "SELECT * FROM users WHERE id = $id" buf {
 			array set ::user [array get buf {[a-z]*}]
+
+			if {![info exists ::user(runkeeper_id)] || $::user(runkeeper_id) == ""} {
+				if {[info exists ::user(runkeeper_oauth_token)]} {
+					# array set rkuser [runkeeper_request user]
+					if {[info exists rkuser(userID)]} {
+						puts "<pre>setting rk userid for user"
+						sql_exec $::db "UPDATE users SET runkeeper_id = [pg_quote $rkuser(userID)] WHERE id = $::user(id)"
+					}
+				}
+			}
 		}
 	}
 }
