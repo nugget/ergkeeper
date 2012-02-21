@@ -1,0 +1,63 @@
+#!/usr/bin/tclsh
+
+package require http
+package require tls
+package require csv
+
+proc logmsg {buf} {
+	puts "\[[clock format [clock seconds] -format "%Y-%m-%d %H:%M:%S"]\] $buf"
+}
+
+proc line_type {buf} {
+	set buf [string trim $buf]
+
+	if {$buf == ""} {
+		return "empty"
+	}
+
+	if {[regexp {Log Data for:} $buf]} {
+		return "newuser"
+	}
+
+	if {[regexp {(Concept2 Utility|Time of Day|Total Workout Results)} $buf]} {
+		return "header"
+	}
+
+	if {[regexp {^,} $buf]} {
+		if {[lindex [split $buf ","] 5] == ""} {
+			return "split"
+		} else {
+			return "workout"
+		}
+	}
+
+}
+
+proc main {} {
+	set logfile ~/Documents/LogCard.csv
+	set user	Nugget
+
+	set fh [open $logfile r]
+	set log [read $fh]
+	close $fh
+
+	unset -nocomplain activities
+
+	foreach line [split $log "\n"] {
+		set type [line_type $line]
+
+		switch $type {
+			newuser {
+				set ::username [lindex [split $line ","] 1]
+				logmsg "Loading data for $::username"
+			}
+			empty - header { }
+			default {
+				puts "$type\t$line"
+			}
+		}
+	}
+
+}
+
+if !$tcl_interactive main
