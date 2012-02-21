@@ -1,0 +1,10 @@
+array set DB {
+	dbname			ergkeeper
+	host			localhost
+	port			5432
+	user			ergwww
+	password		password
+	connect_timeout	5
+}
+
+package provide ergkeeper 1.0
