@@ -1,0 +1,20 @@
+<?
+	package require ergkeeper
+
+	page_init
+
+	if {[info exists ::session(session)]} {
+		set sql "UPDATE sessions SET deleted = current_timstamp at time zone 'utc' WHERE session = [pg_quote $::session(session)]"
+		sql_exec $::db $sql
+	}
+
+	page_response
+	load_env
+
+	page_head
+
+
+	page_foot
+
+	page_term
+?>

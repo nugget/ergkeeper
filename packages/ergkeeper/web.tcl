@@ -4,9 +4,8 @@ proc page_init {} {
 	set ::db [dbconnect DB]
 	unset -nocomplain ::session ::user
 
-	array set ::session [get_session]
-
 	load_config
+	array set ::session [get_session]
 }
 
 proc page_term {} {
@@ -17,12 +16,20 @@ proc page_term {} {
 proc page_head {} {
 	puts "<html>"
 	puts "<body>"
+
+	if {[info exists ::session(user_id)] && $::session(user_id) != ""} {
+		if {[info exists ::rkuser(medium_picture)]} {
+			puts "<img src=\"$::rkuser(medium_picture)\">"
+		}
+		puts "<p>Logout</p>"
+	}
+
 }
 
 proc page_foot {} {
 	if {1} {
 		puts "<p>debug:</p>"
-		foreach a {::session ::user} {
+		foreach a {::session ::user ::rkuser} {
 			if {[info exists $a]} {
 				parray $a
 			}
@@ -50,14 +57,11 @@ proc load_user {id} {
 		pg_select $::db "SELECT * FROM users WHERE id = $id" buf {
 			array set ::user [array get buf {[a-z]*}]
 
-			if {![info exists ::user(runkeeper_id)] || $::user(runkeeper_id) == ""} {
-				if {[info exists ::user(runkeeper_oauth_token)]} {
-					# array set rkuser [runkeeper_request user]
-					if {[info exists rkuser(userID)]} {
-						puts "<pre>setting rk userid for user"
-						sql_exec $::db "UPDATE users SET runkeeper_id = [pg_quote $rkuser(userID)] WHERE id = $::user(id)"
-					}
-				}
+			if {[info exists ::user(runkeeper_oauth_token)]} {
+		        lassign [runkeeper_request user] success arrayinfo details
+		        array set ::rkuser $arrayinfo
+		        lassign [runkeeper_request profile] success arrayinfo details
+		        array set ::rkprofile $arrayinfo
 			}
 		}
 	}

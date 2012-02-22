@@ -6,24 +6,31 @@
 	page_response
 	load_env
 
-	page_head
+	set details "Unknown error"
 
 	switch $response(state) {
 		runkeeper {
-			set token [get_oauth_token_from_code $response(code)]
+			lassign [get_oauth_token_from_code $response(code)] success token details
 
-			if {$token != ""} {
-				set_session_token $response(state) $token
+			if {[string is true $success]} {
+				runkeeper_bind_user $token
+
+				headers set Location http://ergkeeper.com/
+
+				page_term
 			}
 		}
 
 		default {
-			puts "Unknown Callback Site"
-			page_term
+			set details "Unknown callback site"
 		}
 	}
 
-	page_foot
+	page_head
 
+	puts "<h1>Unsuccessful Authentication</h1>"
+	puts "<p>$details</p>"
+
+	page_foot
 	page_term
 ?>

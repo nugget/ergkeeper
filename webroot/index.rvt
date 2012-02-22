@@ -11,9 +11,6 @@
 		page_term
 	}
 
-	array set rkuser [runkeeper_request user]
-	parray rkuser
-
 	page_foot
 	page_term
 ?>

@@ -26,17 +26,15 @@ INSERT INTO config (item,value) VALUES ('rkapi_token_url','https://runkeeper.com
 INSERT INTO config (item,value) VALUES ('allow_registration','true');
 
 CREATE TABLE users (
-	id serial NOT NULL,
+	id bigint NOT NULL,
     added timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
     changed timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
     deleted timestamp(0) without time zone,
-	runkeeper_id bigint,
 	runkeeper_oauth_token varchar,
-	facebook_id bigint,
-	facebook_oauth_token varchar,
+	runkeeper_profile varchar,
+	runkeeper_userinfo varchar,
 	PRIMARY KEY(id)
 );
-GRANT ALL ON users_id_seq TO c2rkwww;
 GRANT SELECT,INSERT,UPDATE ON users TO c2rkwww;
 CREATE TRIGGER onupdate BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();
 

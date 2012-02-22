@@ -17,9 +17,21 @@ proc runkeeper_login_button {} {
 	append buf {" title="Login with RunKeeper, powered by the Health Graph"></a>}
 }
 
-proc runkeeper_request {method} {
+proc runkeeper_request {method {token ""}} {
+	set success		0
+	set details		"Unknown"
+	array set reponse {}
+
+	if {$token == "" && [info exists ::user(runkeeper_oauth_token)] && $::user(runkeeper_oauth_token) != ""} {
+		set token $::user(runkeeper_oauth_token)
+	}
+
+	if {$token == ""} {
+		return [list $success [array get response] "No token available"]
+	}
+
 	set uri "$::config(rkapi_base_url)$method"
-	set headers [list Authorization "Bearer $::user(runkeeper_oauth_token)" Accept application/vnd.com.runkeeper.User+json]
+	set headers [list Authorization "Bearer $token"]
 
 	# puts "<h1>get $uri</h1>"
 
@@ -33,18 +45,53 @@ proc runkeeper_request {method} {
 	# parray state
 	::http::cleanup $fp
 
-    # Extract the access token.
-    if {$status != "ok" || $ncode != 200} {
-        puts "Major Fail to retrieve method: $status / $ncode / $formdata / $err"
-		return
-    }
+	set details "uri:$uri status:$status ncode:$ncode data:$formdata err:$err"
 
     set jsonkv [::yajl::json2dict $formdata]
+	# puts "<pre>$jsonkv</pre>"
     array set response $jsonkv
+
 	# parray response
 
-	return [array get response]
+	set success 1
 
+	return [list $success [array get response] $details]
 }
+
+proc runkeeper_bind_user {token} {
+
+	pg_select $::db "SELECT * FROM users WHERE runkeeper_oauth_token = [pg_quote $token]" buf {
+		set user_id $buf(id)
+	}
+
+	if {![info exists user_id]} {
+		lassign [runkeeper_request user $token] success arrayinfo details
+		array set ::rkuser $arrayinfo
+		lassign [runkeeper_request profile $token] success arrayinfo details
+		array set ::rkprofile $arrayinfo
+
+		pg_select $::db "SELECT id FROM users WHERE id = [pg_quote $::rkuser(userID)]" buf {
+			set sql "UPDATE users SET runkeeper_profile = [pg_quote [array get ::rkprofile]], runkeeper_userinfo = [pg_quote [array get ::rkuser]] WHERE id = $buf(id)"
+			sql_exec $::db $sql
+			set user_id $buf(id)
+		}
+	}
+
+	if {![info exists user_id] && [info exists ::rkuser(userID)]} {
+		unset -nocomplain ins
+		set ins(runkeeper_oauth_token)	$token
+		set ins(id)	$::rkuser(userID)
+		set ins(runkeeper_profile)	[array get ::rkprofile]
+		set ins(runkeeper_userinfo)	[array get ::rkuser]
+
+		set user_id [sql_insert_from_array users ins id]
+	}
+
+	set sql "UPDATE sessions SET user_id = $user_id WHERE session = [pg_quote $::session(session)]"
+	sql_exec $::db $sql
+}
+
+package provide ergkeeper 1.0
+
 
 package provide ergkeeper 1.0
