@@ -33,6 +33,7 @@ CREATE TABLE users (
 	runkeeper_oauth_token varchar,
 	runkeeper_profile varchar,
 	runkeeper_userinfo varchar,
+	logfile_username varchar,
 	PRIMARY KEY(id)
 );
 GRANT SELECT,INSERT,UPDATE ON users TO c2rkwww;
@@ -56,4 +57,24 @@ GRANT SELECT,INSERT,UPDATE ON sessions TO c2rkwww;
 CREATE TRIGGER onupdate BEFORE UPDATE ON sessions FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();
 CREATE INDEX active_sessions ON sessions(session) WHERE deleted IS NULL;
 
+CREATE TABLE activities (
+	id serial NOT NULL,
+    added timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
+    changed timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
+    deleted timestamp(0) without time zone,
+	user_id integer NOT NULL REFERENCES users(id),
+    posted timestamp(0) without time zone,
+	runkeeper_uri varchar,
+	type varchar NOT NULL DEFAULT 'Rowing',
+	start_time timestamp NOT NULL,
+	total_distance bigint NOT NULL,
+	duration bigint NOT NULL,
+	average_heart_rate integer,
+	heart_rate varchar,
+	total_calories bigint,
+	notes varchar,
+	PRIMARY KEY(id)
+);
+GRANT ALL ON activities_id_seq TO c2rkwww;
+GRANT SELECT,INSERT,UPDATE ON activities TO c2rkwww;
 

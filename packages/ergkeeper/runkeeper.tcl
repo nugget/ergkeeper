@@ -17,7 +17,11 @@ proc runkeeper_login_button {} {
 	append buf {" title="Login with RunKeeper, powered by the Health Graph"></a>}
 }
 
-proc runkeeper_request {method {token ""}} {
+proc runkeeper_content_type {method} {
+	return "application/vnd.com.runkeeper.NewFitnessActivity+json"
+}
+
+proc runkeeper_request {method {token ""} {body ""}} {
 	set success		0
 	set details		"Unknown"
 	array set reponse {}
@@ -35,25 +39,35 @@ proc runkeeper_request {method {token ""}} {
 
 	# puts "<h1>get $uri</h1>"
 
+	::http::config -useragent "ErgKeeper/1.0"
 	::http::register https 443 ::tls::socket
-    set fp [::http::geturl $uri -timeout 15000 -headers $headers]
+
+	if {$body != ""} {
+    	set fp [::http::geturl $uri -timeout 15000 -headers $headers -query $body -type [runkeeper_content_type $method]]
+	} else {
+    	set fp [::http::geturl $uri -timeout 15000 -headers $headers]
+	}
 	set status [::http::status $fp]
 	set ncode [::http::ncode $fp]
 	set err [::http::error $fp]
+	array set retheaders [::http::meta $fp]
 	set formdata [string trim [::http::data $fp]]
 	upvar #0 $fp state
-	# parray state
+	parray state
 	::http::cleanup $fp
 
-	set details "uri:$uri status:$status ncode:$ncode data:$formdata err:$err"
+	set details "uri:($uri) status:($status) ncode:($ncode) data:($formdata) err:($err) headers:([array get retheaders])"
 
     set jsonkv [::yajl::json2dict $formdata]
+
 	# puts "<pre>$jsonkv</pre>"
     array set response $jsonkv
 
 	# parray response
 
-	set success 1
+	if {$ncode >= 200 && $ncode <= 399} {
+		set success 1
+	}
 
 	return [list $success [array get response] $details]
 }
@@ -91,7 +105,37 @@ proc runkeeper_bind_user {token} {
 	sql_exec $::db $sql
 }
 
-package provide ergkeeper 1.0
+proc runkeeper_json_post {method body} {
+	puts "<h1>JSON Post</h1><pre>$body</pre>"
+	lassign [runkeeper_request $method "" $body] success array_data details
+	puts "<p>$success<br/>$array_data<br/>$details</p>"
+}
 
+proc runkeeper_post_activity {id} {
+	set success 0
+	set details ""
+
+	pg_select $::db "SELECT * FROM activities WHERE id = $id" buf {
+		if {$buf(posted) != ""} {
+			set details "Duplicate (already posted)"
+		} else {
+			set yo [yajl create #auto]
+			$yo map_open
+			$yo string start_time string [clock format [clock scan $buf(start_time)] -format "%a, %d %b %Y %H:%M:%S"]
+			foreach f {type notes} {
+				$yo string $f string $buf($f)
+			}
+			foreach f {total_distance duration average_heart_rate total_calories} {
+				$yo string $f number $buf($f)
+			}
+			$yo string gymEquipment string "Rowing Machine"
+			$yo map_close
+			runkeeper_json_post fitnessActivities [$yo get]
+			$yo delete
+		}
+	}
+
+	return [list $success $details]
+}
 
 package provide ergkeeper 1.0

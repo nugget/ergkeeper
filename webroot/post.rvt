@@ -1,4 +1,5 @@
 <?
+	package forget ergkeeper
 	package require ergkeeper
 
 	page_init
