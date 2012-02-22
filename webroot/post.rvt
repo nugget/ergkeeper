@@ -6,14 +6,31 @@
 	page_response
 	page_head
 
-	if {![info exists ::user(id)]} {
-		puts [runkeeper_login_button]
-		page_foot
-		page_term
+	require_login
+
+	unset -nocomplain idlist
+	foreach f [array names response sel_*] {
+		puts "<pre>$f</pre>"
+		if {[regexp {sel_(\d+)} $f _ id]} {
+			lappend idlist $id
+		}
 	}
 
-	lassign [runkeeper_post_activity 1] status details
-	puts "post $status $details"
+	if {[info exists idlist]} {
+		pg_select $::db "SELECT * FROM activities WHERE posted IS NULL AND deleted IS NULL AND id IN ([join $idlist ","])" buf {
+			set id $buf(id)
+
+			if {[info exists response(notes_$id)] && $response(notes_$id) != ""} {
+				sql_exec $::db "UPDATE activities SET notes = [pg_quote $response(notes_$id)] WHERE id = $id"
+			}
+			#lassign [runkeeper_post_activity 1] status details
+			#puts "post $status $details"
+			puts "<li>Posting activity $id to RunKeeper</li>"
+
+			# sql_exec $::db "UPDATE activities SET posted = current_timestamp at time zone 'utc' WHERE id = $id"
+		}
+	}
+
 
 	page_foot
 	page_term

@@ -53,7 +53,7 @@ proc runkeeper_request {method {token ""} {body ""}} {
 	array set retheaders [::http::meta $fp]
 	set formdata [string trim [::http::data $fp]]
 	upvar #0 $fp state
-	parray state
+	# parray state
 	::http::cleanup $fp
 
 	set details "uri:($uri) status:($status) ncode:($ncode) data:($formdata) err:($err) headers:([array get retheaders])"

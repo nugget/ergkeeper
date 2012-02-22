@@ -1,4 +1,5 @@
 package require uuid
+package require form
 
 proc page_init {} {
 	set ::db [dbconnect DB]
@@ -104,6 +105,51 @@ proc get_session {} {
 proc update_session {id} {
 	set sql "UPDATE sessions SET ip_recent = [pg_quote [env REMOTE_ADDR]], agent_recent = [pg_quote [env HTTP_USER_AGENT]] WHERE session = [pg_quote $id]"
 	sql_exec $::db $sql
+}
+
+proc require_login {} {
+	if {![info exists ::user(id)]} {
+		puts [runkeeper_login_button]
+		page_foot
+		page_term
+	}
+}
+
+proc table {command {id "default"}} {
+	switch $command {
+		start {
+			upvar row_$id row
+			if {[info exists row]} {
+				unset row
+			}
+			return "<table>"
+		}
+		end {
+			upvar row_$id row
+			if {[info exists row]} {
+				unset row
+			}
+			return "</table>"
+		}
+		default {
+			return "<!-- unknown table command $command -->"
+		}
+	}
+}
+
+proc rowclass {prefix {id "default"}} {
+	upvar row_$id row
+
+	if {![info exists row] || $row != 1} {
+		set row 1
+	} else {
+		set row 2
+	}
+	return "class=\"$prefix$row\""
+}
+
+proc head {buf} {
+	return "<h2>$buf</h2>"
 }
 
 package provide ergkeeper 1.0

@@ -1,0 +1,41 @@
+<?
+	package forget ergkeeper
+	package require ergkeeper
+
+	page_init
+	page_response
+	page_head
+
+	require_login
+
+	puts [head "Select activities to post"]
+
+	form myform -defaults response -method post -name chooser -action post
+	myform start
+
+	puts [table start]
+	puts "<tr><th>Sel</th><th colspan=\"2\">Date</th><th>Time</th><th>Duration</th><th>Notes</th></tr>"
+
+	pg_select $::db "SELECT *, (duration::varchar||' seconds')::interval as dur_interval FROM activities WHERE user_id = $::user(id) AND posted IS NULL ORDER BY start_time" buf {
+		puts "<tr [rowclass row]>"
+		puts "<td>"
+		myform checkbox sel_$buf(id)
+		puts "</td>"
+		puts "<td>[clock format [clock scan $buf(start_time)] -format "%A"]</td>"
+		puts "<td>[clock format [clock scan $buf(start_time)] -format "%d-%b-%Y"]</td>"
+		puts "<td>[clock format [clock scan $buf(start_time)] -format "%H:%M"]</td>"
+		puts "<td align=\"right\">$buf(dur_interval)</td>"
+		puts "<td><input type=\"text\" name=\"notes_$buf(id)\" size=\"40\" value=\"$buf(notes)\"/></td>"
+		puts "</tr>"
+	}
+
+	puts [table end]
+
+	myform submit submit -value "Upload to RunKeeper"
+
+	myform end
+	myform destroy
+
+	page_foot
+	page_term
+?>
