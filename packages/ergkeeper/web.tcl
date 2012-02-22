@@ -30,7 +30,7 @@ proc page_head {} {
 proc page_foot {} {
 	if {1} {
 		puts "<p>debug:</p>"
-		foreach a {::session ::user ::rkuser} {
+		foreach a {::session ::user ::rkuser ::rkprofile} {
 			if {[info exists $a]} {
 				parray $a
 			}

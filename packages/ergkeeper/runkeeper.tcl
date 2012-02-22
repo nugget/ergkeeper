@@ -130,7 +130,7 @@ proc runkeeper_post_activity {id} {
 			}
 			$yo string gymEquipment string "Rowing Machine"
 			$yo map_close
-			runkeeper_json_post fitnessActivities [$yo get]
+			runkeeper_json_post $::rkuser(fitness_activities) [$yo get]
 			$yo delete
 		}
 	}
