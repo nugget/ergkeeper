@@ -1,6 +1,6 @@
 <?
 	#
-	# curl -F csvdata=@tclform.patch http://ergkeeper.com/auto_upload
+	# curl -F csvdata=@FILENAME http://ergkeeper.com/auto_upload
 	#
 
 	package require ergkeeper
