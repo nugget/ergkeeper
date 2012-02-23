@@ -37,9 +37,11 @@
 		puts "</tr>"
 	}
 
-	puts [table end]
-
+	puts "<tr><td colspan=\"7\" align=\"center\" style=\"background-color: #dfdfdf;\">"
 	myform submit submit -value "Upload to RunKeeper"
+	puts "</td></tr>"
+
+	puts [table end]
 
 	myform end
 	myform destroy
