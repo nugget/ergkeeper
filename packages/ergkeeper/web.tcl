@@ -19,7 +19,7 @@ proc page_head {{title "ErgKeeper"}} {
 	puts "<head>"
 	puts "<title>$title</title>"
 	puts {<link rel="stylesheet" href="/css/default.css" type="text/css" />}
-	puts {<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">}
+	puts {<link rel="shortcut icon" href="/favicon.ico" />}
 	puts "</head>"
 	puts "<body>"
 
