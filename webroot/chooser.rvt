@@ -4,23 +4,32 @@
 
 	page_init
 	page_response
-	page_head
+	page_head "ErgKeeper: Activity Chooser"
+
+	if {[info exists response(weeks)] && [string is integer $response(weeks)]} {
+		set weeks $response(weeks)
+		set title "$response(weeks) Weeks"
+	} else {
+		set weeks 1
+		set title "Week"
+	}
 
 	require_login
 
-	puts [head "Select activities to post"]
+	puts [head "Unposted Activities from the past $title"]
 
 	form myform -defaults response -method post -name chooser -action post
 	myform start
 
 	puts [table start]
-	puts "<tr><th>Sel</th><th colspan=\"2\">Date</th><th>Time</th><th>Duration</th><th>Notes</th></tr>"
+	puts "<tr><th>Sel</th><th>User</th><th colspan=\"2\">Date</th><th>Time</th><th>Duration</th><th>Notes</th></tr>"
 
-	pg_select $::db "SELECT *, (duration::varchar||' seconds')::interval as dur_interval FROM activities WHERE start_time >= current_date - '1 week'::interval AND user_id = $::user(id) AND posted IS NULL ORDER BY start_time" buf {
+	pg_select $::db "SELECT *, (duration::varchar||' seconds')::interval as dur_interval FROM activities WHERE start_time >= current_date - '$weeks week'::interval AND user_id = $::user(id) AND posted IS NULL ORDER BY name, start_time" buf {
 		puts "<tr [rowclass row]>"
 		puts "<td>"
 		myform checkbox sel_$buf(id)
 		puts "</td>"
+		puts "<td>$buf(name)</td>"
 		puts "<td>[clock format [clock scan $buf(start_time)] -format "%A"]</td>"
 		puts "<td>[clock format [clock scan $buf(start_time)] -format "%d-%b-%Y"]</td>"
 		puts "<td>[clock format [clock scan $buf(start_time)] -format "%H:%M"]</td>"

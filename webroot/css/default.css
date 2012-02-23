@@ -69,3 +69,28 @@ div.userinfo {
 	align: center;
 	border: 1px solid black;
 }
+
+table {
+	border: 3px solid black;
+	border-collapse: collapse;
+}
+tr {
+	font-size: small;
+}
+tr.row1 {
+	background-color: #ffffff;
+}
+tr.row2 {
+	background-color: #dfdfdf;
+}
+td {
+	padding: 2px 8px;
+	border-left: 1px solid #afafaf;
+	border-bottom: 1px solid #afafaf;
+}
+th {
+	background-color: #7f7f7f;
+	margin: 0px;
+	border-left: 1px solid black;
+	border-bottom: 2px solid black;
+}
