@@ -8,10 +8,35 @@
 	require_login
 
 	if {![var exists csvdata]} {
-		puts {<form enctype="multipart/form-data" method="post">}
+		puts [head "Upload your LogCard.csv File"]
+
+		puts "<center>"
+
+		form myform -defaults response -method post -name chooser -action post -enctype "multipart/form-data"
+		myform start
+
+		puts "<table>"
+		puts "<tr><th colspan=\"2\">Upload Options</th></tr>"
+		puts "<tr><td colspan=\"2\">"
 		puts {<input type="file" name="csvdata" size="40" />}
-		puts {<input type="submit" value="Upload CSV" />}
-		puts {</form>}
+		puts "</td></tr>"
+
+		pg_select $::db "SELECT id FROM activities WHERE user_id = $::user(id) LIMIT 1" buf {
+			#puts "<tr><td>Auto-import (bypass chooser):</td><td>"
+			#myform checkbox moo
+			#puts "</td></tr>"
+		}
+
+		puts "<tr><td colspan=\"2\" align=\"center\" style=\"background-color: #dfdfdf;\">"
+		myform submit submit -value "Upload LogCard File"
+		puts "</td></tr>"
+
+		puts "</table>"
+		puts "</center>"
+
+		myform end
+		myform destroy
+
 		page_foot
 		page_term
 	}
