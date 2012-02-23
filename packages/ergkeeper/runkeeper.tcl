@@ -15,10 +15,10 @@ proc runkeeper_login_button {} {
 	}
 
 	append buf {<script src="http://static1.runkeeper.com/script/runkeeper_assets.js"></script>}
-	append buf {<a id="rk_login-blue-black" class="rk_webButtonWithText200" href="}
+	append buf {<center><a id="rk_login-blue-black" class="rk_webButtonWithText200" href="}
 	append buf "$::config(rkapi_auth_url)?"
 	append buf [join $arglist "&"]
-	append buf {" title="Login with RunKeeper, powered by the Health Graph"></a>}
+	append buf {" title="Login with RunKeeper, powered by the Health Graph"></a></center>}
 }
 
 proc runkeeper_content_type {method} {

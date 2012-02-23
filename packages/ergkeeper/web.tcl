@@ -24,7 +24,7 @@ proc page_head {{title "ErgKeeper"}} {
 	puts "<body>"
 
 	puts "<div class=\"header\">"
-	puts "<a href=\"/\"><img class=\"topimage\" src=\"/images/logo-xparent.png\" /></a>"
+	puts "<a href=\"/\"><img class=\"topimage\" border=\"0\" src=\"/images/logo-xparent.png\" /></a>"
 
 	set menu {/about "About ErgKeeper" /upload "Upload" /chooser "Post" /privacy "Privacy"}
 
