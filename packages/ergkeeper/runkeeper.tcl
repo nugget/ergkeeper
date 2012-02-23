@@ -111,9 +111,11 @@ proc runkeeper_bind_user {token} {
 }
 
 proc runkeeper_json_post {method body} {
-	puts "<h1>JSON Post</h1><pre>$body</pre>"
+	#puts "<h1>JSON Post</h1><pre>$body</pre>"
 	lassign [runkeeper_request $method "" $body] success array_data details
-	puts "<p>$success<br/>$array_data<br/>$details</p>"
+	#puts "<p>$success<br/>$array_data<br/>$details</p>"
+
+	return [list $success $array_data $details]
 }
 
 proc runkeeper_post_activity {id} {
@@ -135,7 +137,17 @@ proc runkeeper_post_activity {id} {
 			}
 			$yo string gymEquipment string "Rowing Machine"
 			$yo map_close
-			runkeeper_json_post $::rkuser(fitness_activities) [$yo get]
+			lassign [runkeeper_json_post $::rkuser(fitness_activities) [$yo get]] success array_data details
+
+			if {[string is true $success]} {
+				if {[regexp {Location\s+(\S+)} $details _ uri]} {
+					set sql "UPDATE activities SET runkeeper_uri = [pg_quote $uri] WHERE id = $id"
+					sql_exec $::db $sql
+				}
+			} else {
+				puts "<p>RunKeeper Error:</p><code>$details</code><pre>[$yo get]</pre>"
+			}
+
 			$yo delete
 		}
 	}
@@ -254,7 +266,7 @@ proc runkeeper_import_new_activities {user_id log} {
 						incr workouts_in_file
 
 						pg_select $::db $sql buf {
-							puts "<code>$sql</code><br/>"
+							# puts "<code>$sql</code><br/>"
 							incr workouts_loaded
 						}
 					}
