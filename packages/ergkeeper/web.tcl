@@ -14,20 +14,36 @@ proc page_term {} {
 	exit
 }
 
-proc page_head {} {
+proc page_head {{title "ErgKeeper"}} {
 	puts "<html>"
+	puts "<head>"
+	puts "<title>$title</title>"
+	puts {<link rel="stylesheet" href="/css/default.css" type="text/css" />}
+	puts "</head>"
 	puts "<body>"
 
-	if {[info exists ::session(user_id)] && $::session(user_id) != ""} {
-		if {[info exists ::rkuser(medium_picture)]} {
-			puts "<img src=\"$::rkuser(medium_picture)\">"
-		}
-		puts "<p>Logout</p>"
+	puts "<div class=\"header\">"
+	puts "<a href=\"/\"><img src=\"/images/logo-xparent.png\" align=\"left\" hspace=\"8\" /></a>"
+
+	set menu [list /about About /privacy Privacy]
+
+	foreach {uri label} {/about About /privacy Privacy /code "Source Code"} {
+		puts "<a href=\"$uri\" class=\"topmenu\">$label</a> "
 	}
 
+	#if {[info exists ::session(user_id)] && $::session(user_id) != ""} {
+	#	if {[info exists ::rkprofile(small_picture)]} {
+	#		puts "<div class=\"profile_pic\"><img src=\"$::rkprofile(small_picture)\" /></div>"
+	#	}
+	#	puts "<p>Logout</p>"
+	#}
+	puts "</div>"
+	puts "<div class=\"body\">"
 }
 
 proc page_foot {} {
+	puts "</div>"
+
 	if {1} {
 		puts "<p>debug:</p>"
 		foreach a {::session ::user ::rkuser ::rkprofile} {
@@ -36,6 +52,8 @@ proc page_foot {} {
 			}
 		}
 	}
+
+	puts "<div class=\"footer\">&copy; Copyright 2012 David C. McNett.  All Rights Reserved.</div>"
 	puts "</body>"
 	puts "</html>"
 }
