@@ -27,16 +27,19 @@ proc page_head {{title "ErgKeeper"}} {
 
 	set menu [list /about About /privacy Privacy]
 
-	foreach {uri label} {/about About /privacy Privacy /code "Source Code"} {
+	foreach {uri label} {/about About /upload "Upload" /chooser "Post" /privacy Privacy /code "Source Code"} {
 		puts "<a href=\"$uri\" class=\"topmenu\">$label</a> "
 	}
 
-	#if {[info exists ::session(user_id)] && $::session(user_id) != ""} {
-	#	if {[info exists ::rkprofile(small_picture)]} {
-	#		puts "<div class=\"profile_pic\"><img src=\"$::rkprofile(small_picture)\" /></div>"
-	#	}
-	#	puts "<p>Logout</p>"
-	#}
+	if {[info exists ::user(id)]} {
+		if {[info exists ::rkprofile(small_picture)]} {
+			set img_url $::rkprofile(small_picture)
+		} else {
+			set img_url "/images/userpic.jpg"
+		}
+		puts "<a href=\"/logout\" class=\"topuser\">Logout (<img class=\"topuser\" height=\"20\" width=\"20\" src=\"$img_url\" /> $::rkprofile(name))</a>"
+	}
+
 	puts "</div>"
 	puts "<div class=\"body\">"
 }
@@ -44,7 +47,7 @@ proc page_head {{title "ErgKeeper"}} {
 proc page_foot {} {
 	puts "</div>"
 
-	if {1} {
+	if {0} {
 		puts "<p>debug:</p>"
 		foreach a {::session ::user ::rkuser ::rkprofile} {
 			if {[info exists $a]} {

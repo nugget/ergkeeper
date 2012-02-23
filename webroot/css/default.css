@@ -19,7 +19,8 @@ div.footer {
 	bottom: 0px;
 	margin-bottom: 0;
 	padding: 4;
-	width: 100%;
+	left: 0;
+	right: 0;
 	font-size: x-small;
 	text-align: center;
 	border-top: 2px solid black;
@@ -34,11 +35,37 @@ a.topmenu {
 	color: #ffffff;
 	padding: 4px 8px;
 }
+
 a.topmenu:hover {
 	background-color: #3280c2;
+}
+
+a.topuser {
+	font-family: Georgia, Tahoma, sans-serif;
+	font-weight: bold;
+	background-color: #000000;
+	border: 1px solid black;
+	color: #ffffff;
+	padding: 4px 8px;
+	position: absolute;
+	right: 8;
+	top: 8;
+	font-size: 12pt;
+	text-decoration: none;
+}
+a.topuser:hover {
+	background-color: #3280c2;
+}
+img.topuser {
+	height: 10pt;
+	width: 10pt;
 }
 
 div.body {
 	margin: 8;
 }
 
+div.userinfo {
+	align: center;
+	border: 1px solid black;
+}

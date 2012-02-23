@@ -2,9 +2,7 @@
 	package require ergkeeper
 
 	page_init
-
 	page_response
-	load_env
 
 	set details "Unknown error"
 
@@ -15,9 +13,13 @@
 			if {[string is true $success]} {
 				runkeeper_bind_user $token
 
-				headers set Location http://ergkeeper.com/
+				headers set Location http://ergkeeper.com/moocow
 
+				page_head
+				puts "<p>Successful login!</p>"
+				page_foot
 				page_term
+
 			}
 		}
 

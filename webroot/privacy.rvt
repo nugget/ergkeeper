@@ -1,0 +1,12 @@
+<?
+	package require ergkeeper
+
+	page_init
+	page_response
+	page_head
+
+	require_login
+
+	page_foot
+	page_term
+?>

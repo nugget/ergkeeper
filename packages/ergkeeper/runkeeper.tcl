@@ -107,6 +107,7 @@ proc runkeeper_bind_user {token} {
 
 	set sql "UPDATE sessions SET user_id = $user_id WHERE session = [pg_quote $::session(session)]"
 	sql_exec $::db $sql
+	set ::session(user_id) $user_id
 }
 
 proc runkeeper_json_post {method body} {
