@@ -1,0 +1,31 @@
+<?
+	#
+	# curl -F csvdata=@tclform.patch http://ergkeeper.com/auto_upload
+	#
+
+	package require ergkeeper
+
+	page_init
+	page_response
+
+	if {![var exists csvdata]} {
+		puts {<form enctype="multipart/form-data" method="post">}
+		puts {<input type="file" name="csvdata" size="40" />}
+		puts {<input type="submit" value="Upload CSV" />}
+		puts {</form>}
+		page_foot
+		page_term
+	}
+
+	set fh			[upload channel csvdata]
+	set filename	[upload filename csvdata]
+	set size		[upload size csvdata]
+
+	set log [read $fh]
+	close $fh
+
+	puts "$log"
+
+	after 2000
+	page_term
+?>
