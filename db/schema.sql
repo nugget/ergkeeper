@@ -34,6 +34,8 @@ CREATE TABLE users (
 	runkeeper_profile varchar,
 	runkeeper_userinfo varchar,
 	logfile_username varchar,
+	post_to_facebook boolean NOT NULL DEFAULT FALSE,
+	post_to_twitter boolean NOT NULL DEFAULT FALSE,
 	PRIMARY KEY(id)
 );
 GRANT SELECT,INSERT,UPDATE ON users TO c2rkwww;
