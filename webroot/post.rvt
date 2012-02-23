@@ -9,12 +9,12 @@
 
 	unset -nocomplain idlist
 	foreach f [array names response sel_*] {
-		puts "<pre>$f</pre>"
 		if {[regexp {sel_(\d+)} $f _ id]} {
 			lappend idlist $id
 		}
 	}
 
+	puts "<ol>"
 	if {[info exists idlist]} {
 		pg_select $::db "SELECT * FROM activities WHERE posted IS NULL AND deleted IS NULL AND id IN ([join $idlist ","])" buf {
 			set id $buf(id)
@@ -22,17 +22,18 @@
 			if {[info exists response(notes_$id)] && $response(notes_$id) != ""} {
 				sql_exec $::db "UPDATE activities SET notes = [pg_quote $response(notes_$id)] WHERE id = $id"
 			}
-			lassign [runkeeper_post_activity $id] status details
+			lassign [runkeeper_post_activity $id] status details_data
+			unset -nocomplain details
+			array set details $details_data
 
-			puts "post $status $details"
-			puts "<li>Posting activity $id to RunKeeper</li>"
+			puts "<li>Posting activity $id to RunKeeper ($details(status))</li>"
 
 			if {[string is true $status]} {
 				sql_exec $::db "UPDATE activities SET posted = current_timestamp at time zone 'utc' WHERE id = $id"
 			}
 		}
 	}
-
+	puts "</ol>"
 
 	page_foot
 	page_term

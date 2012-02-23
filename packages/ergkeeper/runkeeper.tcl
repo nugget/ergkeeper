@@ -60,7 +60,13 @@ proc runkeeper_request {method {token ""} {body ""}} {
 	# parray state
 	::http::cleanup $fp
 
-	set details "uri:($uri) status:($status) ncode:($ncode) data:($formdata) err:($err) headers:([array get retheaders])"
+	unset -nocomplain details
+	set details(uri)		$uri
+	set details(status)		$status
+	set details(ncode)		$ncode
+	set details(data)		$formdata
+	set details(err)		$err
+	set details(headers)	[array get retheaders]
 
     set jsonkv [::yajl::json2dict $formdata]
 
@@ -73,7 +79,7 @@ proc runkeeper_request {method {token ""} {body ""}} {
 		set success 1
 	}
 
-	return [list $success [array get response] $details]
+	return [list $success [array get response] [array get details]]
 }
 
 proc runkeeper_bind_user {token} {
@@ -137,22 +143,28 @@ proc runkeeper_post_activity {id} {
 			}
 			$yo string gymEquipment string "Rowing Machine"
 			$yo map_close
-			lassign [runkeeper_json_post $::rkuser(fitness_activities) [$yo get]] success array_data details
+			lassign [runkeeper_json_post $::rkuser(fitness_activities) [$yo get]] success array_data details_data
+
+			unset -nocomplain details headers
+			array set details $details_data
+			array set headers $details(headers)
 
 			if {[string is true $success]} {
-				if {[regexp {Location\s+(\S+)} $details _ uri]} {
-					set sql "UPDATE activities SET runkeeper_uri = [pg_quote $uri] WHERE id = $id"
+				if {[info exists headers(Location)]} {
+					set sql "UPDATE activities SET runkeeper_uri = [pg_quote $headers(Location)] WHERE id = $id"
 					sql_exec $::db $sql
 				}
 			} else {
-				puts "<p>RunKeeper Error:</p><code>$details</code><pre>[$yo get]</pre>"
+				puts "<p>RunKeeper Error:</p><pre>[$yo get]</pre>"
+				parray details
+				parray headers
 			}
 
 			$yo delete
 		}
 	}
 
-	return [list $success $details]
+	return [list $success $details_data]
 }
 
 proc c2log_line_type {buf} {
