@@ -3,7 +3,30 @@
 
 	page_init
 	page_response
-	page_head
+	page_head "Privacy Policy"
+
+	puts [head "What ErgKeeper Does With Your Data"]
+
+	puts {
+		<p>
+			Even once you've connected ErgKeeper with your RunKeeper profile this
+			site does not have access to any of your RunKeeper health and fitness data.
+			ErgKeeper connects to RunKeeper in the least-permissive and most-restricted
+			manner possible from the API.  You are not exposing any of your health details
+			to ErgKeeper.
+		</p>
+		<p>
+			ErgKeeper does have access to your RunKeeper profile and basic information.
+		</p>
+
+		<p>
+			<i>Explain data retention policy once it's implemented</i>
+		</p>
+
+		<p>
+			<i>Put a link here to allow a user to delete all their stored information</i>
+		</p>
+	}
 
 	page_foot
 	page_term
