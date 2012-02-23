@@ -72,7 +72,10 @@ CREATE TABLE activities (
 	average_heart_rate integer,
 	heart_rate varchar,
 	total_calories bigint,
+	name varchar,
 	notes varchar,
+	raw varchar,
+	version varchar,
 	PRIMARY KEY(id)
 );
 GRANT ALL ON activities_id_seq TO c2rkwww;

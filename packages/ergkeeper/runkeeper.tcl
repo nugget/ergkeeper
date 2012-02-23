@@ -1,3 +1,7 @@
+package require http
+package require tls
+package require csv
+
 proc runkeeper_login_button {} {
 	set buf ""
 
@@ -136,6 +140,132 @@ proc runkeeper_post_activity {id} {
 	}
 
 	return [list $success $details]
+}
+
+proc c2log_line_type {buf} {
+	set buf [string trim $buf]
+
+	if {$buf == ""} {
+		return "empty"
+	}
+
+	if {[regexp {Log Data for:} $buf]} {
+		return "newuser"
+	}
+
+	if {[regexp {Version (.+)} $buf]} {
+		return "version"
+	}
+	if {[regexp {(Concept2 Utility|Time of Day|Total Workout Results)} $buf]} {
+		return "header"
+	}
+
+	if {[regexp {^,} $buf]} {
+		if {[lindex [split $buf ","] 5] == ""} {
+			return "split"
+		} else {
+			return "workout"
+		}
+	}
+
+}
+
+proc c2log_duration_to_interval {duration} {
+
+	set colon_count [string length [regsub -all {[^:]} $duration ""]]
+	if {$colon_count == 2} {
+		set duration [lindex [split $duration "."] 0]
+	}
+
+	return $duration
+}
+
+
+proc pg_integer {buf} {
+	set buf [lindex [split $buf "."] 0]
+	if {[string is integer $buf]} {
+		return $buf
+	} else {
+		return "NULL"
+	}
+}
+
+proc runkeeper_import_new_activities {user_id log} {
+	unset -nocomplain activities username
+	set version "unknown"
+
+	set workouts_in_file 0
+	set workouts_loaded  0
+
+	foreach line [split $log "\n"] {
+		set type [c2log_line_type $line]
+
+		switch $type {
+			version {
+				regexp {Version (.+)} $line _ version
+			}
+			newuser {
+				set username [lindex [split $line ","] 1]
+			}
+			empty - header { }
+
+			workout {
+				unset -nocomplain ins
+				set ins(version) $version
+
+				# puts $line
+				lassign [::csv::split $line] _ name date time notes duration total_distance avg_spm heart_rate _ _ _ _ _ cal_hr
+
+				set start_time [clock format [clock scan "$date $time"] -format "%Y-%m-%d %H:%M:%S"]
+
+				set notes_regexp [lindex [split $notes "."] 0]
+				set notes_regexp [regsub {^0:} $notes_regexp ""]
+
+				if {[regexp $notes_regexp $duration] && ![regexp {0:00} $duration]} {
+					set notes "'Just Row' Workout"
+				} else {
+					set notes "$notes Workout"
+				}
+
+				set duration [c2log_duration_to_interval $duration]
+
+				set where "1 NOT IN (SELECT 1 FROM activities WHERE deleted IS NULL AND user_id = $user_id AND start_time = [pg_quote $start_time] LIMIT 1)"
+
+				set field_list {user_id start_time total_distance duration average_heart_rate total_calories name notes raw version}
+
+				set value_list [list]
+				lappend value_list [pg_integer $user_id]
+				lappend value_list [pg_quote $start_time]
+				lappend value_list [pg_integer $total_distance]
+				lappend value_list "extract(epoch from [pg_quote $duration]::interval)::integer"
+				lappend value_list [pg_integer $heart_rate]
+				lappend value_list "(((extract(epoch from [pg_quote $duration]::interval)::float)/3600)*[pg_integer $cal_hr])::integer"
+				lappend value_list [pg_quote $name]
+				lappend value_list [pg_quote $notes]
+				lappend value_list [pg_quote $line]
+				lappend value_list [pg_quote $version]
+
+				set sql "INSERT INTO activities ([join $field_list ","]) SELECT [join $value_list ","] WHERE $where RETURNING 1"
+
+				if {[info exists ::user(logfile_username)] && $::user(logfile_username) != ""} {
+					if {$::user(logfile_username) == $name} {
+
+						incr workouts_in_file
+
+						pg_select $::db $sql buf {
+							puts "<code>$sql</code><br/>"
+							incr workouts_loaded
+						}
+					}
+				}
+			}
+
+			default { }
+		}
+	}
+
+	puts "<p>Loaded $workouts_loaded workouts from file of $workouts_in_file</p>"
+	return [list $workouts_loaded $workouts_in_file]
 }
 
 package provide ergkeeper 1.0

@@ -1,31 +1,33 @@
 <?
+	package forget ergkeeper
 	package require ergkeeper
 
 	page_init
 	page_response
 	page_head
 
-	if {![info exists ::user(id)]} {
-		puts [runkeeper_login_button]
+	require_login
+
+	if {![var exists csvdata]} {
+		puts {<form enctype="multipart/form-data" method="post">}
+		puts {<input type="file" name="csvdata" size="40" />}
+		puts {<input type="submit" value="Upload CSV" />}
+		puts {</form>}
 		page_foot
 		page_term
 	}
 
-	if {[var exists csvdata]} {
-		set fh			[upload channel csvdata]
-		set filename	[upload filename csvdata]
-		set size		[upload size csvdata]
+	set fh			[upload channel csvdata]
+	set filename	[upload filename csvdata]
+	set size		[upload size csvdata]
 
-		set buf [read $fh]
+	set log [read $fh]
+	close $fh
 
-		puts "<h1>$filename</h1>"
-		puts "<pre>$buf</pre>"
-	} else {
-		puts {<form action="?" enctype="multipart/form-data" method="post">}
-		puts {<input type="file" name="csvdata" size="40" />}
-		puts {<input type="submit" value="Upload CSV" />}
-		puts {</form>}
-	}
+	#puts "<h1>$filename</h1>"
+	#puts "<pre>$log</pre>"
+
+	runkeeper_import_new_activities $::user(id) $log
 
 	page_foot
 	page_term

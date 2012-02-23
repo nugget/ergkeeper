@@ -11,9 +11,6 @@
 		page_term
 	}
 
-	lassign [runkeeper_post_activity 1] status details
-	puts "post $status $details"
-
 	page_foot
 	page_term
 ?>
