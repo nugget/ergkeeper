@@ -24,13 +24,9 @@ proc page_head {{title "ErgKeeper"}} {
 	puts "<body>"
 
 	puts "<div class=\"header\">"
-	puts "<a href=\"/\"><img src=\"/images/logo-xparent.png\" align=\"left\" hspace=\"8\" /></a>"
+	puts "<a href=\"/\"><img class=\"topimage\" src=\"/images/logo-xparent.png\" /></a>"
 
-	set menu [list /about About /privacy Privacy]
-
-	foreach {uri label} {/about About /upload "Upload" /chooser "Post" /privacy Privacy /code "Source Code"} {
-		puts "<a href=\"$uri\" class=\"topmenu\">$label</a> "
-	}
+	set menu {/about "About ErgKeeper" /upload "Upload" /chooser "Post" /privacy "Privacy"}
 
 	if {[info exists ::user(id)]} {
 		if {[info exists ::rkprofile(small_picture)]} {
@@ -38,8 +34,16 @@ proc page_head {{title "ErgKeeper"}} {
 		} else {
 			set img_url "/images/userpic.jpg"
 		}
-		puts "<a href=\"/logout\" class=\"topuser\">Logout (<img class=\"topuser\" height=\"20\" width=\"20\" src=\"$img_url\" /> $::rkprofile(name))</a>"
+		lappend menu "/logout"
+		lappend menu "Logout <span style=\"font-weight: normal;\">(<img class=\"topuser\" height=\"20\" width=\"20\" src=\"$img_url\" /> $::rkprofile(name))</span>"
+
+		#puts "<a href=\"/logout\" class=\"topuser\">Logout <span style=\"font-weight: normal;\">(<img class=\"topuser\" height=\"20\" width=\"20\" src=\"$img_url\" /> $::rkprofile(name))</span></a>"
 	}
+
+	foreach {uri label} $menu {
+		puts "<a href=\"$uri\" class=\"topmenu\">$label</a> "
+	}
+
 
 	puts "</div>"
 	puts "<div class=\"body\">"
@@ -170,8 +174,8 @@ proc rowclass {prefix {id "default"}} {
 	return "class=\"$prefix$row\""
 }
 
-proc head {buf} {
-	return "<h2>$buf</h2>"
+proc head {buf {level 2}} {
+	return "<h$level>$buf</h$level>"
 }
 
 package provide ergkeeper 1.0

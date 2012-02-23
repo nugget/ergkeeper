@@ -7,9 +7,13 @@ body {
 
 div.header {
 	background-color: #ffbe0d;
-	height: 90px;
-	margin: 0px;
 	border-bottom: 2px solid black;
+	margin: 0px;
+	height: 90px;
+}
+
+img.topimage {
+	float: left;
 }
 
 div.footer {
@@ -34,35 +38,25 @@ a.topmenu {
 	border: 1px solid black;
 	color: #ffffff;
 	padding: 4px 8px;
+	float: left;
+	margin-top: 32px;
+	margin-right: 8px;
+	box-shadow: 4px 4px 5px #8c6702;
 }
 
 a.topmenu:hover {
 	background-color: #3280c2;
 }
 
-a.topuser {
-	font-family: Georgia, Tahoma, sans-serif;
-	font-weight: bold;
-	background-color: #000000;
-	border: 1px solid black;
-	color: #ffffff;
-	padding: 4px 8px;
-	position: absolute;
-	right: 8;
-	top: 8;
-	font-size: 12pt;
-	text-decoration: none;
-}
-a.topuser:hover {
-	background-color: #3280c2;
-}
 img.topuser {
 	height: 10pt;
 	width: 10pt;
 }
 
 div.body {
-	margin: 8;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1200px;
 }
 
 div.userinfo {
@@ -70,9 +64,31 @@ div.userinfo {
 	border: 1px solid black;
 }
 
+h2 {
+	text-align: center;
+	background-color: #efefef;
+	padding: 2px;
+	margin: 20px 10%;
+}
+h3 {
+	margin: 20px 10%;
+}
+
+p {
+	text-size: normal;
+	margin: 20px 11%;
+}
+
+ol {
+	text-size: normal;
+	margin: 20px 10%;
+}
+
 table {
 	border: 3px solid black;
 	border-collapse: collapse;
+	margin-left: auto;
+	margin-right: auto;
 }
 tr {
 	font-size: small;

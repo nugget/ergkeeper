@@ -5,14 +5,40 @@
 	page_response
 	page_head
 
-	puts "<h1>Welcome to ErgKeeper</h1>"
+	puts [head "Welcome to ErgKeeper"]
 
-	puts "<p>"
-	puts "</p>"
+	puts {
+		<p>
+			ErgKeeper is a free web-portal which can be used to upload workout information
+			from your PM4-equpped <a href="http://www.concept2.com/">Concept2</a> rowing
+			machine to your account on <a href="http://runkeeper.com/">RunKeeper</a>.
+			That's all the site does.
+		</p>
+		<p>
+			This site is brand-new and in beta testing currently.  There are certainly
+			many bugs left to find and many features which are not implemented yet.
+			It is fully-functional from end-to-end, though, and you're welcome to
+			give it a shot.
+		</p>
+	}
 
 	if {![info exists ::user(id)]} {
 		puts [runkeeper_login_button]
 	}
+
+	puts [head "How Does This Work?"]
+
+	puts {
+		<p>
+			It's pretty simple, really:
+		</p>
+		<ol>
+	}
+	puts "<li>Export your workout data from the PM4 monitor using the the <a href=\"http://www.concept2.com/us/service/software/c2u/\">Concept2 Utility</a></li>"
+	puts "<li>Upload the log file export (LogData.CSV) to this website</li>"
+	puts "<li>Choose which workouts you wish to post to RunKeeper</li>"
+	puts "<li>Click &#8220;go&#8221; and let ErgKeeper do all the work</li>"
+	puts "<li>Enjoy a refreshing beverage</li>"
 
 	page_foot
 	page_term

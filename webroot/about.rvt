@@ -3,9 +3,58 @@
 
 	page_init
 	page_response
-	page_head
+	page_head "About ErgKeeper"
 
-	require_login
+	puts [head "Frequently Asked Questions"]
+
+    puts [head "What's All This, Then?" 3]
+
+	puts {
+		<p>
+			This site was developed by <a href="https://www.facebook.com/nugget">David McNett</a>
+			because he's a lazy slacker and couldn't be bothered to do math after he was done
+			rowing on his Concept2 rowing machine but really, really wanted his workouts to
+			be reflected on his <a href="http://runkeeper.com/user/macnugget">RunKeeper account</a>.
+		</p>
+		<p>
+			The universe lacked a simple way to get erg workouts posted to RunKeeper.  So he wrote one.
+		</p>
+		<p>
+			David is happily using this site as he'd hoped.  You're welcome to use it too.  This is just
+			a thing that some guy made.  ErgKeeper doesn't want your cash, it doesn't want to show you
+			ads, it doesn't even really care if you ever upgrade to a RunKeeper Elite account.  Really.
+		</p>
+	}
+
+	puts [head "Why can't you just pull from my Concept2 Online Logbook?" 3]
+
+	puts {
+		<p>
+			While it's possible that this function will be added in the future, it didn't seem
+			immediately practical.  The CSV upload approach is a sane approach and does manage
+			to significantly lower the burden on the user.  The loss of detail when posting to
+			the Concept2 Online Log is significant.  The raw CSV logfile exports contain more
+			information which we use when posting to RunKeeper.
+		</p>
+	}
+
+	puts [head "I'm a Huge Geek Too!" 3]
+
+	puts {
+		<p>
+			Awesome!  If you want to help out, the source code for this site is open and available
+			on a github repository.  It's written in Tcl (Apache Rivet),  requires PostgreSQL on
+			the back-end, and assumes you're hosting on some flavor of Unix.
+		</p>
+		<p>
+			<a href="https://github.com/nugget/ergkeeper">https://github.com/nugget/ergkeeper</a>
+		</p>
+		<p>
+			You can, in theory, even run your own instance of ErgKeeper, although that would require
+			you to create your own <a href="http://runkeeper.com/partner/applications">RunKeeper Application</a>
+			so that you can have your own API key.
+		</p>
+	}
 
 	page_foot
 	page_term
