@@ -24,6 +24,7 @@ INSERT INTO config (item,value) VALUES ('rkapi_client_secret','0123456789abcdef'
 INSERT INTO config (item,value) VALUES ('rkapi_auth_url','https://runkeeper.com/apps/authorize');
 INSERT INTO config (item,value) VALUES ('rkapi_token_url','https://runkeeper.com/apps/token');
 INSERT INTO config (item,value) VALUES ('allow_registration','true');
+INSERT INTO config (item,value) VALUES ('archive_logs','false');
 
 CREATE TABLE users (
 	id bigint NOT NULL,
@@ -82,4 +83,17 @@ CREATE TABLE activities (
 );
 GRANT ALL ON activities_id_seq TO c2rkwww;
 GRANT SELECT,INSERT,UPDATE ON activities TO c2rkwww;
+CREATE TRIGGER onupdate BEFORE UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();
 
+CREATE TABLE logs (
+	id serial NOT NULL,
+    added timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
+    changed timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
+    deleted timestamp(0) without time zone,
+	user_id integer NOT NULL REFERENCES users(id),
+	csvdata text NOT NULL,
+	PRIMARY KEY(id)
+);
+GRANT ALL ON logs_id_seq TO c2rkwww;
+GRANT SELECT,INSERT ON logs TO c2rkwww;
+CREATE TRIGGER logs BEFORE UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();

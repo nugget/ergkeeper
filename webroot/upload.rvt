@@ -12,7 +12,7 @@
 
 		puts "<center>"
 
-		form myform -defaults response -method post -name chooser -action post -enctype "multipart/form-data"
+		form myform -defaults response -method post -name chooser -enctype "multipart/form-data"
 		myform start
 
 		puts "<table>"
@@ -50,6 +50,11 @@
 
 	#puts "<h1>$filename</h1>"
 	#puts "<pre>$log</pre>"
+
+	if {[opt_bool archive_logs]} {
+		set sql "INSERT INTO logs (user_id,csvdata) SELECT $::user(id), [pg_quote $log]"
+		sql_exec $::db $sql
+	}
 
 	runkeeper_import_new_activities $::user(id) $log
 
