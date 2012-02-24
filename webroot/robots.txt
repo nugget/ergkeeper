@@ -1,0 +1,4 @@
+User-agent: *
+Disalllow: upload
+Disalllow: chooser
+Disalllow: auth_revoke
