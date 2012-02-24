@@ -61,7 +61,7 @@ proc page_foot {} {
 		}
 	}
 
-	puts "<div class=\"footer\">&copy; Copyright 2012 David C. McNett.  All Rights Reserved.</div>"
+	# puts "<div class=\"footer\">&copy; Copyright 2012 David C. McNett.  All Rights Reserved.</div>"
 	puts "</body>"
 	puts "</html>"
 }
