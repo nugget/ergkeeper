@@ -11,7 +11,7 @@ proc page_init {} {
 
 proc page_term {} {
 	dbdisconnect
-	exit
+	abort_page
 }
 
 proc page_head {{title "ErgKeeper"}} {
