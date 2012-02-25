@@ -16,7 +16,10 @@
 				headers set Location http://ergkeeper.com/moocow
 
 				page_head
-				puts "<p>Successful login!</p>"
+				puts [head "Login Successful!"]
+
+				puts "<center>Next Step: <a href=\"/upload\">Upload your log file</a></center>"
+
 				page_foot
 				page_term
 
