@@ -37,6 +37,25 @@
 		myform end
 		myform destroy
 
+		puts [head "How to create your log file"]
+
+
+		puts {
+			<p>
+			Connect your PM4 to your computer and run the Concept2 Utility application.
+			Choose 'Transfer Data' and then 'Transfer to Spreadsheet.'
+			</p>
+		}
+
+		puts "<center><img src=\"/images/c2u-spreadsheet.png\" height=\"112\" width=\"469\" alt=\"Transfer to Spreadsheet\" /></center>"
+
+		puts {
+			<p>
+				Save the 'spreadsheet' file somewhere you your computer, then click 'choose file' at the top of this web page and select
+				the spreadsheet file just created.
+			</p>
+		}
+
 		page_foot
 		page_term
 	}
