@@ -1,9 +1,9 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
-	page_head
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head
 
 	puts [head "Welcome to ErgKeeper"]
 
@@ -40,6 +40,6 @@
 	puts "<li>Click &#8220;go&#8221; and let ErgKeeper do all the work</li>"
 	puts "<li>Enjoy a refreshing beverage</li>"
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>

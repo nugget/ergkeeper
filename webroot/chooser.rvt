@@ -1,9 +1,9 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
-	page_head "ErgKeeper: Activity Chooser"
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head "ErgKeeper: Activity Chooser"
 
 	if {[info exists response(weeks)] && [string is integer $response(weeks)]} {
 		set weeks $response(weeks)
@@ -13,7 +13,7 @@
 		set title "Week"
 	}
 
-	require_login
+	::ergkeeper::require_login
 
 	puts [head "Unposted Activities from the past $title"]
 
@@ -46,6 +46,6 @@
 	myform end
 	myform destroy
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>

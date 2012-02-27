@@ -1,8 +1,8 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
+	::ergkeeper::page_init
+	::ergkeeper::page_response
 
 	set details "Unknown error"
 
@@ -15,13 +15,13 @@
 
 				headers set Location http://ergkeeper.com/moocow
 
-				page_head
+				::ergkeeper::page_head
 				puts [head "Login Successful!"]
 
 				puts "<center>Next Step: <a href=\"/upload\">Upload your log file</a></center>"
 
-				page_foot
-				page_term
+				::ergkeeper::page_foot
+				::ergkeeper::page_term
 
 			}
 		}
@@ -31,11 +31,11 @@
 		}
 	}
 
-	page_head
+	::ergkeeper::page_head
 
 	puts "<h1>Unsuccessful Authentication</h1>"
 	puts "<p>$details</p>"
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>

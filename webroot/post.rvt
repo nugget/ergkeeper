@@ -1,11 +1,11 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
-	page_head
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head
 
-	require_login
+	::ergkeeper::require_login
 
 	unset -nocomplain idlist
 	foreach f [array names response sel_*] {
@@ -35,6 +35,6 @@
 	}
 	puts "</ol>"
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>

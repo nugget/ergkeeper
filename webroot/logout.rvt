@@ -1,7 +1,7 @@
 <?
 	package require ergkeeper
 
-	page_init
+	::ergkeeper::page_init
 
 	if {[info exists ::session(session)]} {
 		set sql "UPDATE sessions SET deleted = current_timestamp at time zone 'utc' WHERE session = [pg_quote $::session(session)]"
@@ -10,13 +10,13 @@
 	}
 	unset -nocomplain ::user ::session ::rkuser ::rkprofile
 
-	page_head
+	::ergkeeper::page_head
 
 	puts "<h1>Logout Successful</h1>"
 
 	puts "<p>You have been successfully logged out of the ErgKeeper site</p>"
 
-	page_foot
+	::ergkeeper::page_foot
 
-	page_term
+	::ergkeeper::page_term
 ?>

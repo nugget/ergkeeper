@@ -1,11 +1,11 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
-	page_head
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head
 
-	require_login
+	::ergkeeper::require_login
 
 	if {![var exists csvdata]} {
 		puts [head "Upload your LogCard.csv File"]
@@ -56,8 +56,8 @@
 			</p>
 		}
 
-		page_foot
-		page_term
+		::ergkeeper::page_foot
+		::ergkeeper::page_term
 	}
 
 	set fh			[upload channel csvdata]
@@ -77,6 +77,6 @@
 
 	runkeeper_import_new_activities $::user(id) $log
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>

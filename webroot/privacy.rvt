@@ -1,9 +1,9 @@
 <?
 	package require ergkeeper
 
-	page_init
-	page_response
-	page_head "Privacy Policy"
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head "Privacy Policy"
 
 	puts [head "What ErgKeeper Does With Your Data"]
 
@@ -28,6 +28,6 @@
 		</p>
 	}
 
-	page_foot
-	page_term
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
 ?>
