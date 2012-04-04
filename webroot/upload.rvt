@@ -64,6 +64,8 @@
 	set filename	[upload filename csvdata]
 	set size		[upload size csvdata]
 
+	fconfigure $fh -translation auto
+
 	set log [read $fh]
 	close $fh
 
