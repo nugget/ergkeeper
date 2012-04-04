@@ -215,19 +215,71 @@ proc pg_integer {buf} {
 	}
 }
 
+proc detect_date_format {log} {
+	unset -nocomplain alist blist dlist
+
+	foreach line [split $log "\n"] {
+		if {[regexp {(\d\d)\/(\d\d)\/(\d\d\d\d)} $line _ aa bb cccc]} {
+			lappend alist [scan $aa %d]
+			lappend blist [scan $bb %d]
+			lappend dlist "$aa/$bb/$cccc"
+		}
+	}
+
+	set alist [lsort -integer -unique -decreasing $alist]
+	set blist [lsort -integer -unique -decreasing $blist]
+	set dlist [lsort -unique $dlist]
+
+	if {[lindex $alist 0] > 12 && [lindex $blist 0] <= 12} {
+		return "ddmmyyyy"
+	} elseif {[lindex $blist 0] > 12 && [lindex $alist 0] <= 12} {
+		return "mmddyyyy"
+	} else {
+		return "unknown"
+	}
+}
+
+proc iso_date {buf format} {
+	set retval $buf
+
+	if {[regexp {(\d\d)\/(\d\d)\/(\d\d\d\d)} $buf _ aa bb cccc]} {
+		switch $format {
+			"mmddyyyy" {
+				set retval "$cccc-$aa-$bb"
+			}
+
+			"ddmmyyyy" {
+				set retval "$cccc-$bb-$aa"
+			}
+		}
+	}
+	if {[opt_bool debug]} {
+		puts "<p>iso_date $buf $format = $retval"
+	}
+	return $retval
+}
+
 proc runkeeper_import_new_activities {user_id log} {
+	set ::config(debug) 0
+
 	unset -nocomplain activities username
 	set version "unknown"
 
 	set workouts_in_file 0
 	set workouts_loaded  0
 
+	set date_format [detect_date_format $log]
+
 	foreach line [split $log "\n"] {
 		set type [c2log_line_type $line]
 
+		if {[opt_bool debug]} {
+			incr linec
+			puts "$linec - $type - $line"
+		}
 		switch $type {
 			version {
-				regexp {Version (.+)} $line _ version
+				regexp {Version ([\d\.]+)} $line _ version
 			}
 			newuser {
 				set username [lindex [split $line ","] 1]
@@ -241,7 +293,8 @@ proc runkeeper_import_new_activities {user_id log} {
 				# puts $line
 				lassign [::csv::split $line] _ name date time notes duration total_distance avg_spm heart_rate _ _ _ _ _ cal_hr
 
-				set start_time [clock format [clock scan "$date $time"] -format "%Y-%m-%d %H:%M:%S"]
+				set isodate [iso_date $date $date_format]
+				set start_time [clock format [clock scan "$isodate $time"] -format "%Y-%m-%d %H:%M:%S"]
 
 				set notes_regexp [lindex [split $notes "."] 0]
 				set notes_regexp [regsub {^0:} $notes_regexp ""]
@@ -271,16 +324,24 @@ proc runkeeper_import_new_activities {user_id log} {
 				lappend value_list [pg_quote $version]
 
 				set sql "INSERT INTO activities ([join $field_list ","]) SELECT [join $value_list ","] WHERE $where RETURNING 1"
+				if {[opt_bool debug]} {
+					puts "<p><code>$sql</code></p>"
+				}
 
-				if {[info exists ::user(logfile_username)] && $::user(logfile_username) != ""} {
+				incr workouts_in_file
+
+				set import_this_line 0
+				if {![info exists ::user(logfile_username)] || $::user(logfile_username) == ""} {
+					set import_this_line 1
+				} else {
 					if {$::user(logfile_username) == $name} {
+						set import_this_line 1
+					}
+				}
 
-						incr workouts_in_file
-
-						pg_select $::db $sql buf {
-							# puts "<code>$sql</code><br/>"
-							incr workouts_loaded
-						}
+				if {$import_this_line == 1} {
+					pg_select $::db $sql buf {
+						incr workouts_loaded
 					}
 				}
 			}
