@@ -17,6 +17,13 @@
 
 	puts [head "Unposted Activities from the past $title"]
 
+	set opts [list]
+	foreach {wc title} {4 "One Month" 8 "Two Months" 9999 "All Time"} {
+		lappend opts "<a href=\"?weeks=$wc\">$title</a>"
+	}
+	puts "<p>[join $opts " &middot; "]</p>"
+
+
 	form myform -defaults response -method post -name chooser -action post
 	myform start
 
