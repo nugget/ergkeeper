@@ -219,7 +219,7 @@ proc detect_date_format {log} {
 	unset -nocomplain alist blist dlist
 
 	foreach line [split $log "\n"] {
-		if {[regexp {(\d\d)\/(\d\d)\/(\d\d\d\d)} $line _ aa bb cccc]} {
+		if {[regexp {(\d+)\/(\d+)\/(\d+)} $line _ aa bb cccc]} {
 			lappend alist [scan $aa %d]
 			lappend blist [scan $bb %d]
 			lappend dlist "$aa/$bb/$cccc"
