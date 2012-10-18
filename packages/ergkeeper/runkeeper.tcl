@@ -135,6 +135,7 @@ proc runkeeper_post_activity {id} {
 			set yo [yajl create #auto]
 			$yo map_open
 			$yo string start_time string [clock format [clock scan $buf(start_time)] -format "%a, %d %b %Y %H:%M:%S"]
+			$yo string equipment "Row Machine"
 			foreach f {type notes} {
 				$yo string $f string $buf($f)
 			}
