@@ -56,6 +56,14 @@
 		</p>
 	}
 
+	puts [head "What if I have problems?" 3]
+
+	puts {
+		<p>
+			I can be reached at support@ergkeeper.com
+		</p>
+	}
+
 	::ergkeeper::page_foot
 	::ergkeeper::page_term
 ?>
