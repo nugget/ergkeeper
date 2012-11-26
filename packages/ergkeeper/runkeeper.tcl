@@ -168,7 +168,7 @@ proc runkeeper_post_activity {id} {
 	return [list $success $details_data]
 }
 
-proc c2log_line_type {buf} {
+proc c2log_line_type {buf delimeter} {
 	set buf [string trim $buf]
 
 	if {$buf == ""} {
@@ -186,8 +186,8 @@ proc c2log_line_type {buf} {
 		return "header"
 	}
 
-	if {[regexp {^,} $buf]} {
-		if {[lindex [split $buf ","] 5] == ""} {
+	if {[regexp "^$delimeter" $buf]} {
+		if {[lindex [split $buf $delimeter] 5] == ""} {
 			return "split"
 		} else {
 			return "workout"
@@ -220,7 +220,7 @@ proc detect_date_format {log} {
 	unset -nocomplain alist blist dlist
 
 	foreach line [split $log "\n"] {
-		if {[regexp {(\d+)\/(\d+)\/(\d+)} $line _ aa bb cccc]} {
+		if {[regexp {(\d+)[\/-](\d+)[\/-](\d+)} $line _ aa bb cccc]} {
 			lappend alist [scan $aa %d]
 			lappend blist [scan $bb %d]
 			lappend dlist "$aa/$bb/$cccc"
@@ -238,6 +238,18 @@ proc detect_date_format {log} {
 	} else {
 		return "unknown"
 	}
+}
+
+proc detect_delimeter {log} {
+	set delimeter ","
+
+	foreach line [split $log "\n"] {
+		if {[regexp {Log Data for:(.)} $line _ seen_delimeter]} {
+			set delimeter $seen_delimeter
+		}
+	}
+
+	return "$delimeter"
 }
 
 proc iso_date {buf format} {
@@ -270,9 +282,10 @@ proc runkeeper_import_new_activities {user_id log} {
 	set workouts_loaded  0
 
 	set date_format [detect_date_format $log]
+	set delimeter   [detect_delimeter $log]
 
 	foreach line [split $log "\n"] {
-		set type [c2log_line_type $line]
+		set type [c2log_line_type $line $delimeter]
 
 		if {[opt_bool debug]} {
 			incr linec
@@ -283,7 +296,7 @@ proc runkeeper_import_new_activities {user_id log} {
 				regexp {Version ([\d\.]+)} $line _ version
 			}
 			newuser {
-				set username [lindex [split $line ","] 1]
+				set username [lindex [split $line $delimeter] 1]
 			}
 			empty - header { }
 
@@ -292,7 +305,7 @@ proc runkeeper_import_new_activities {user_id log} {
 				set ins(version) $version
 
 				# puts $line
-				lassign [::csv::split $line] _ name date time notes duration total_distance avg_spm heart_rate _ _ _ _ _ cal_hr
+				lassign [::csv::split $line $delimeter] _ name date time notes duration total_distance avg_spm heart_rate _ _ _ _ _ cal_hr
 
 				set isodate [iso_date $date $date_format]
 				set start_time [clock format [clock scan "$isodate $time"] -format "%Y-%m-%d %H:%M:%S"]
