@@ -135,7 +135,7 @@ proc runkeeper_post_activity {id} {
 			set yo [yajl create #auto]
 			$yo map_open
 			$yo string start_time string [clock format [clock scan $buf(start_time)] -format "%a, %d %b %Y %H:%M:%S"]
-			$yo string equipment "Row Machine"
+			$yo string equipment string "Row Machine"
 			foreach f {type notes} {
 				$yo string $f string $buf($f)
 			}
@@ -255,7 +255,7 @@ proc detect_delimeter {log} {
 proc iso_date {buf format} {
 	set retval $buf
 
-	if {[regexp {(\d\d)\/(\d\d)\/(\d\d\d\d)} $buf _ aa bb cccc]} {
+	if {[regexp {(\d+)[\/-](\d+)[\/-](\d\d\d\d)} $buf _ aa bb cccc]} {
 		switch $format {
 			"mmddyyyy" {
 				set retval "$cccc-$aa-$bb"
