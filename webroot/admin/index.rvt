@@ -1,0 +1,19 @@
+<?
+	package forget ergkeeper
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+
+	::ergkeeper::page_head
+
+	::ergkeeper::require_admin
+
+	puts [head "Welcome to ErgKeeper"]
+
+	parray ::config
+	parray ::user
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>
