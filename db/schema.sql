@@ -25,6 +25,7 @@ INSERT INTO config (item,value) VALUES ('rkapi_client_id','0123456789abcdef');
 INSERT INTO config (item,value) VALUES ('rkapi_client_secret','0123456789abcdef');
 INSERT INTO config (item,value) VALUES ('rkapi_auth_url','https://runkeeper.com/apps/authorize');
 INSERT INTO config (item,value) VALUES ('rkapi_token_url','https://runkeeper.com/apps/token');
+INSERT INTO config (item,value) VALUES ('rkapi_base_url','https://api.runkeeper.com/');
 INSERT INTO config (item,value) VALUES ('allow_registration','true');
 INSERT INTO config (item,value) VALUES ('archive_logs','false');
 
