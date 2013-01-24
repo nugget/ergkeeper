@@ -8,12 +8,14 @@ CREATE OR REPLACE FUNCTION onupdate_changed() RETURNS trigger AS $$
 $$ LANGUAGE plpgsql;
 
 CREATE TABLE config (
+	id serial NOT NULL,
 	item varchar NOT NULL,
 	value varchar NOT NULL,
     added timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
     changed timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
 	comments varchar,
-	PRIMARY KEY(item)
+	vhost varchar,
+	PRIMARY KEY(id)
 );
 GRANT SELECT ON config TO c2rkwww;
 CREATE TRIGGER onupdate BEFORE UPDATE ON config FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();
@@ -37,6 +39,7 @@ CREATE TABLE users (
 	logfile_username varchar,
 	post_to_facebook boolean NOT NULL DEFAULT FALSE,
 	post_to_twitter boolean NOT NULL DEFAULT FALSE,
+	admin boolean NOT NULL DEFAULT FALSE,
 	PRIMARY KEY(id)
 );
 GRANT SELECT,INSERT,UPDATE ON users TO c2rkwww;
