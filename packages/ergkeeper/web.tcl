@@ -180,7 +180,20 @@ proc head {buf {level 2}} {
 	return "<h$level>$buf</h$level>"
 }
 
-
+proc apache_info {type} {
+    switch $type {
+        alias {
+            set host [env HTTP_HOST]
+            if {$host == ""} {
+                set host ergkeeper.com
+            }
+            return $host
+        }
+        virtual { return [env SERVER_NAME] }
+        real { return [info host] }
+        ssl { return [env SERVER_NAME] }
+    }
+}
 
 package provide ergkeeper 1.0
 

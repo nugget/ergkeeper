@@ -68,7 +68,11 @@ proc load_config {} {
 	unset -nocomplain ::config
 	array set ::config {}
 
-	pg_select $::db "SELECT item,value FROM config" buf {
+	pg_select $::db "SELECT item,value FROM config WHERE vhost IS NULL" buf {
+		set ::config($buf(item)) $buf(value)
+	}
+
+	pg_select $::db "SELECT item,value FROM config WHERE vhost = [pg_quote [apache_info virtual]]" buf {
 		set ::config($buf(item)) $buf(value)
 	}
 }
