@@ -10,7 +10,7 @@ proc opt_bool {item} {
 
 namespace eval ::ergkeeper {
 	proc require_admin {} {
-		if {![info exists ::user(admin)] || [string is false -struct $::user(admin)]} {
+		if {![info exists ::user(admin)] || [string is false -strict $::user(admin)]} {
 			puts "<p>Access Denied</p>"
 			::ergkeeper::page_foot
 			::ergkeeper::page_term
