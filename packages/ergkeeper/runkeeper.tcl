@@ -220,11 +220,15 @@ proc detect_date_format {log} {
 	unset -nocomplain alist blist dlist
 
 	foreach line [split $log "\n"] {
-		if {[regexp {(\d+)[\/-](\d+)[\/-](\d+)} $line _ aa bb cccc]} {
+		if {[regexp {(\d+)[\.\/-](\d+)[\.\/-](\d+)} $line _ aa bb cccc]} {
 			lappend alist [scan $aa %d]
 			lappend blist [scan $bb %d]
 			lappend dlist "$aa/$bb/$cccc"
 		}
+	}
+
+	if {![info exists alist]} {
+		return "unknown"
 	}
 
 	set alist [lsort -integer -unique -decreasing $alist]
@@ -255,7 +259,7 @@ proc detect_delimeter {log} {
 proc iso_date {buf format} {
 	set retval $buf
 
-	if {[regexp {(\d+)[\/-](\d+)[\/-](\d\d\d\d)} $buf _ aa bb cccc]} {
+	if {[regexp {(\d+)[\.\/-](\d+)[\.\/-](\d\d\d\d)} $buf _ aa bb cccc]} {
 		switch $format {
 			"mmddyyyy" {
 				set retval "$cccc-$aa-$bb"
@@ -283,6 +287,10 @@ proc runkeeper_import_new_activities {user_id log} {
 
 	set date_format [detect_date_format $log]
 	set delimeter   [detect_delimeter $log]
+
+	if {$date_format eq "unknown"} {
+		puts "<p>Warning: unable to determine date format in log file</p>"
+	}
 
 	foreach line [split $log "\n"] {
 		set type [c2log_line_type $line $delimeter]
