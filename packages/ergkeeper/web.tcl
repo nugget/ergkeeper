@@ -29,6 +29,10 @@ namespace eval ::ergkeeper {
 
 		set menu {/about "About ErgKeeper" /upload "Upload" /chooser "Post" /privacy "Privacy"}
 
+		if {[info exists ::user(admin)] && [string is true -strict $::user(admin)]} {
+			set menu [concat $menu {/admin/ Admin}]
+		}
+
 		if {[info exists ::user(id)]} {
 			if {[info exists ::rkprofile(small_picture)]} {
 				set img_url $::rkprofile(small_picture)
