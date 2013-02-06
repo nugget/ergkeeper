@@ -1,0 +1,47 @@
+<?
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+
+	if {![info exists response(table)] || ![info exists response(id)]} {
+		::ergkeeper::page_head "ErgKeeper: Database Viewer"
+
+		puts [head "Invalid Request"]
+
+		if {[array exists response]} {
+			puts "<p>"
+			parray response
+			puts "</p>"
+		}
+
+		::ergkeeper::page_foot
+		::ergkeeper::page_term
+
+	}
+
+	sanitize_alphanum response(table)
+	sanitize_number   response(id)
+	set sql "SELECT * FROM $response(table) WHERE id = $response(id)"
+
+	::ergkeeper::page_head "ErgKeeper: Recent Activities"
+
+	::ergkeeper::require_login
+    ::ergkeeper::require_admin
+
+	puts [head $sql]
+	puts "<p>"
+	puts [table start]
+	pg_select $::db $sql buf {
+		foreach f $buf(.headers) {
+			puts "<tr><th>$f</th>"
+			puts "<td>$buf($f)</td>"
+			puts "</tr>"
+		}
+		puts [table end]
+	}
+	puts "</p>"
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>

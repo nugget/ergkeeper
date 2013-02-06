@@ -1,0 +1,11 @@
+Options ExecCGI FollowSymLinks
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /admin/
+
+RewriteRule ^view/(.*)/(.*)$	row_viewer.rvt?table=$1;id=$2
+
+RewriteRule ^([^\.\?]+[^\/])$	$1.rvt		[QSA]
+
+</IfModule>
