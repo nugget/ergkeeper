@@ -127,6 +127,7 @@ proc runkeeper_json_post {method body} {
 proc runkeeper_post_activity {id} {
 	set success 0
 	set details ""
+	set ::config(debug) 0
 
 	pg_select $::db "SELECT * FROM activities WHERE id = $id" buf {
 		if {$buf(posted) != ""} {
@@ -143,7 +144,29 @@ proc runkeeper_post_activity {id} {
 				$yo string $f number $buf($f)
 			}
 			$yo string gymEquipment string "Rowing Machine"
+
+			if {[info exists buf(splits)] && $buf(splits) ne ""} {
+				$yo string distance array_open
+				foreach split $buf(splits) {
+					array set s $split
+					$yo map_open string timestamp double $s(timestamp) string distance double $s(distance) map_close
+				}
+				$yo array_close
+				$yo string heart_rate array_open
+				foreach split $buf(splits) {
+					array set s $split
+					$yo map_open string timestamp double $s(timestamp) string heart_rate double $s(heart_rate) map_close
+				}
+				$yo array_close
+			}
+
 			$yo map_close
+
+			if {[opt_bool debug]} {
+				puts "<code>[$yo get]</code>"
+				$yo delete
+				return
+			}
 			lassign [runkeeper_json_post $::rkuser(fitness_activities) [$yo get]] success array_data details_data
 
 			unset -nocomplain details headers
