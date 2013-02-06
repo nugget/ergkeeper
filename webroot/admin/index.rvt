@@ -40,12 +40,16 @@
 	puts [dwmtl_row "Tracebacks" site_errors added]
 	puts [table end]
 
-	puts [head "Admin Tools"]
+	set menu_items {"User List" users "Recent Activities" activities "Recent Tracebacks" tracebacks "RK App" "http://runkeeper.com/apps/moo/cow/44420"}
+
+	puts "<br />"
+
 	puts [table start]
+	puts "<tr><th colspan=\"[expr [llength $menu_items] / 2]\">Admin Tools</th></tr>"
 	puts "<tr>"
-	puts {<td nowrap=\"nowrap\"><a href="users">User List</a></td>}
-	puts {<td nowrap=\"nowrap\"><a href="activities">Recent Activities</a></td>}
-	puts {<td nowrap=\"nowrap\"><a href="tracebacks">Recent Tracebacks</a></td>}
+	foreach {title href} $menu_items {
+		puts "<td nowrap=\"nowrap\"><a href=\"$href\">$title</a></td>"
+	}
 	puts "</tr>"
 	puts [table end]
 
