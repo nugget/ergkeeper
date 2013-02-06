@@ -306,17 +306,16 @@ proc runkeeper_import_new_activities {user_id log} {
 			newuser {
 				set username [lindex [split $line $delimeter] 1]
 			}
-			empty - header { }
-
 			workout {
-				unset -nocomplain ins
+				unset -nocomplain ins activity_id field_list value_list
 				set ins(version) $version
 
 				# puts $line
 				lassign [::csv::split $line $delimeter] _ name date time notes duration total_distance avg_spm heart_rate _ _ _ _ _ cal_hr
 
-				set isodate [iso_date $date $date_format]
-				set start_time [clock format [clock scan "$isodate $time"] -format "%Y-%m-%d %H:%M:%S"]
+				set isodate     [iso_date $date $date_format]
+				set start_epoch [clock scan "$isodate $time"]
+				set start_time  [clock format $start_epoch -format "%Y-%m-%d %H:%M:%S"]
 
 				set notes_regexp [lindex [split $notes "."] 0]
 				set notes_regexp [regsub {^0:} $notes_regexp ""]
@@ -332,8 +331,6 @@ proc runkeeper_import_new_activities {user_id log} {
 				set where "1 NOT IN (SELECT 1 FROM activities WHERE deleted IS NULL AND user_id = $user_id AND start_time = [pg_quote $start_time] LIMIT 1)"
 
 				set field_list {user_id start_time total_distance duration average_heart_rate total_calories name notes raw version}
-
-				set value_list [list]
 				lappend value_list [pg_integer $user_id]
 				lappend value_list [pg_quote $start_time]
 				lappend value_list [pg_integer $total_distance]
@@ -345,7 +342,7 @@ proc runkeeper_import_new_activities {user_id log} {
 				lappend value_list [pg_quote $line]
 				lappend value_list [pg_quote $version]
 
-				set sql "INSERT INTO activities ([join $field_list ","]) SELECT [join $value_list ","] WHERE $where RETURNING 1"
+				set sql "INSERT INTO activities ([join $field_list ","]) SELECT [join $value_list ","] WHERE $where RETURNING id"
 				if {[opt_bool debug]} {
 					puts "<p><code>$sql</code></p>"
 				}
@@ -364,6 +361,39 @@ proc runkeeper_import_new_activities {user_id log} {
 				if {$import_this_line == 1} {
 					pg_select $::db $sql buf {
 						incr workouts_loaded
+						unset -nocomplain splitlist incr_distance split_count
+						set activity_id $buf(id)
+					}
+				}
+			}
+
+			split {
+				# ,Nugget,2/5/13,20:32,0:30:07,,,,,05:00.0,1077,23,154,02:19.2,745,130
+				lassign [::csv::split $line $delimeter] _ name date time notes _ _ _ _ split_time split_meters split_spm split_hr pace500 cal_hr avg_hr
+
+				lassign [lreverse [split [lindex [split $split_time "."] 0] ":"]] ss mm hh
+				set ss [scan $ss %d]
+				set mm [scan $mm %d]
+				set hh [scan $hh %d]
+				set split_seconds 0
+				if {$hh ne ""} {
+					incr split_seconds [expr 60*60*$hh]
+				}
+				incr split_seconds [expr 60*$mm]
+				incr split_seconds $ss
+
+				#puts "<p>$line</p>"
+				#puts "<p>secs $split_seconds time $split_time - meters $split_meters - spm $split_spm - hr $split_hr - pace/500m $pace500 - cal $cal_hr - hr $avg_hr</p>"
+				incr incr_distance $split_meters
+				lappend splitlist [list timestamp $split_seconds distance $incr_distance heart_rate $split_hr]
+			}
+
+			empty {
+				if {[info exists activity_id] && [info exists splitlist]} {
+					set sql "UPDATE activities SET splits = [pg_quote $splitlist] WHERE id = $activity_id"
+					sql_exec $::db $sql
+					if {[opt_bool debug]} {
+						puts "<p><code>$sql</code></p>"
 					}
 				}
 			}
