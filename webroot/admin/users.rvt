@@ -36,7 +36,7 @@
 		}
 
 		puts "</td>"
-		puts "<td align=\"right\">$buf(id)</td>"
+		puts "<td align=\"right\"><a href=\"view/users/$buf(id)\">$buf(id)</a></td>"
 		puts "<td>[clock format [clock scan $buf(added)] -format "%d-%b-%Y"]</td>"
 		puts "<td><a href=\"$profile(profile)\">$profile(name)</a></td>"
 		puts "<td align=\"right\">$buf(activities)</td>"
