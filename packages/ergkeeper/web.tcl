@@ -181,6 +181,10 @@ namespace eval ::ergkeeper {
 			set ins(error)		"UNKNOWN"
 		}
 
+		if {[info exists ::user(admin)] && [string is true -strict $::user(admin)]} {
+			# Don't log errors to database if it's an admin
+			return
+		}
 		sql_insert_from_array site_errors ins
 	}
 }
