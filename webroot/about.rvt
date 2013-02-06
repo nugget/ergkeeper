@@ -60,7 +60,8 @@
 
 	puts {
 		<p>
-			I can be reached at support@ergkeeper.com
+			I can be reached at support@ergkeeper.com or you can open an issue on the
+			<a href="https://github.com/nugget/ergkeeper/issues">issue tracker</a>.
 		</p>
 	}
 
