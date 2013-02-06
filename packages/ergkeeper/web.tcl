@@ -147,12 +147,13 @@ namespace eval ::ergkeeper {
 	}
 
 	proc site_error {{extra_message ""}} {
-		catch {log_error}
 		headers numeric 500
 
 		if {[opt_bool show_tracebacks] && [info exists ::errorInfo]} {
 			puts "<h1>Rivet Error</h1>"
 			puts "<pre class=\"traceback\">$::errorInfo</pre>"
+		} else {
+			catch {log_error}
 		}
 
 		puts "<p>I'm sorry, but an error has occurred.</p>"
