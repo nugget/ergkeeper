@@ -2,6 +2,27 @@
 	package forget ergkeeper
 	package require ergkeeper
 
+	proc dwmtl_row {title table tsfield {where "1=1"}} {
+		set retbuf ""
+
+		append retbuf "<tr>"
+		append retbuf "<td>$title</td>"
+		foreach interval {"1 day" "1 week" "1 month" "99 years"} {
+			set sql "SELECT count(*) FROM $table WHERE $where AND $tsfield >= current_timestamp - '$interval'::interval"
+			pg_select $::db $sql buf {
+				append retbuf "<td align=\"right\">$buf(count)</td>"
+			}
+		}
+		set sql "SELECT max($tsfield), (current_timestamp at time zone 'utc' - max($tsfield))::interval(0) as since FROM $table WHERE $where"
+		pg_select $::db $sql buf {
+				append retbuf "<td align=\"right\">[clock format [clock scan $buf(max)] -format "%a, %d-%b-%d %H:%M %Z" -timezone ":America/Chicago"]</td>"
+				append retbuf "<td align=\"right\">$buf(since) ago</td>"
+		}
+		append retbuf "</tr>"
+
+		return $retbuf
+	}
+
 	::ergkeeper::page_init
 	::ergkeeper::page_response
 
@@ -9,11 +30,30 @@
 
 	::ergkeeper::require_admin
 
-	puts [head "Welcome to ErgKeeper"]
+	puts [head "ErgKeeper Statistics"]
 
-	parray ::config
-	parray ::user
+	puts [table start]
+	puts "<tr><th>&nbsp;</th><th>Today</th><th>Week</th><th>Month</th><th>Total</th><th>Last</th><th>Interval</th></tr>"
+	puts [dwmtl_row "User Registrations" users added]
+	puts [dwmtl_row "User Visits" sessions changed "user_id IS NOT NULL AND user_id <> $::user(id)"]
+	puts [dwmtl_row "Activity Uploads" activities added]
+	puts [dwmtl_row "Activity Posts" activities changed "posted IS NOT NULL"]
+	puts [dwmtl_row "Tracebacks" site_errors added]
+	puts [table end]
+
+	puts [head "Admin Tools"]
+	puts [table start]
+	puts "<tr>"
+	puts {<td nowrap=\"nowrap\"><a href="users">User List</a></td>}
+	puts {<td nowrap=\"nowrap\"><a href="activities">Recent Activities</a></td>}
+	puts {<td nowrap=\"nowrap\"><a href="tracebacks">Recent Tracebacks</a></td>}
+	puts "</tr>"
+	puts [table end]
+
+	# parray ::config
+	# parray ::user
 
 	::ergkeeper::page_foot
 	::ergkeeper::page_term
+
 ?>
