@@ -146,18 +146,25 @@ proc runkeeper_post_activity {id} {
 			$yo string gymEquipment string "Rowing Machine"
 
 			if {[info exists buf(splits)] && $buf(splits) ne ""} {
+
 				$yo string distance array_open
 				foreach split $buf(splits) {
 					array set s $split
-					$yo map_open string timestamp double $s(timestamp) string distance double $s(distance) map_close
+					if {[info exists s(timestamp)] && [info exists s(distance)] && $s(distance) ne ""} {
+						$yo map_open string timestamp double $s(timestamp) string distance double $s(distance) map_close
+					}
 				}
 				$yo array_close
+
 				$yo string heart_rate array_open
 				foreach split $buf(splits) {
 					array set s $split
-					$yo map_open string timestamp double $s(timestamp) string heart_rate double $s(heart_rate) map_close
+					if {[info exists s(timestamp)] && [info exists s(heart_rate)] && $s(heart_rate) ne ""} {
+						$yo map_open string timestamp double $s(timestamp) string heart_rate double $s(heart_rate) map_close
+					}
 				}
 				$yo array_close
+
 			}
 
 			$yo map_close
@@ -412,7 +419,7 @@ proc runkeeper_import_new_activities {user_id log} {
 			}
 
 			empty {
-				if {[info exists activity_id] && [info exists splitlist]} {
+				if {[info exists activity_id] && [info exists splitlist] && $spitlist ne ""} {
 					set sql "UPDATE activities SET splits = [pg_quote $splitlist] WHERE id = $activity_id"
 					sql_exec $::db $sql
 					if {[opt_bool debug]} {
