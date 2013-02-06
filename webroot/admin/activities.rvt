@@ -1,0 +1,51 @@
+<?
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head "ErgKeeper: Recent Activities"
+
+	::ergkeeper::require_login
+    ::ergkeeper::require_admin
+
+	puts [head "Recent Activities"]
+
+	puts [table start]
+	puts "<tr>"
+	foreach hdr {ID Added User Name Posted Notes Distance Version Splits} {
+		puts "<th>$hdr</th>"
+	}
+	puts "</tr>"
+
+	if {[info exists response(limit)]} {
+		sanitize_number response(limit)
+	} else {
+		set response(limit) 10
+	}
+
+	set sql "SELECT * FROM activities ORDER BY id DESC LIMIT $response(limit)"
+
+	pg_select $::db $sql buf {
+		puts "<tr [rowclass row]>"
+		puts "<td align=\"right\"><a href=\"view/activities/$buf(id)\">$buf(id)</a></td>"
+		puts "<td>[clock format [clock scan $buf(added) -gmt 1] -format "%d-%b-%Y %H:%M %Z" -timezone ":America/Chicago"]</td>"
+		puts "<td align=\"right\"><a href=\"view/users/$buf(user_id)\">$buf(user_id)</a></td>"
+		puts "<td>$buf(name)</td>"
+		if {[info exists buf(posted)] && $buf(posted) ne ""} {
+			# puts "<td>[clock format [clock scan $buf(posted) -gmt 1] -format "%d-%b-%Y"]</td>"
+			puts "<td align=\"center\">&check;</td>"
+		} else {
+			puts "<td>&nbsp;</td>"
+		}
+		puts "<td>$buf(notes)</td>"
+		puts "<td align=\"right\">$buf(total_distance)</td>"
+		puts "<td align=\"right\">$buf(version)</td>"
+		puts "<td align=\"right\">[llength $buf(splits)]</td>"
+		puts "</tr>"
+	}
+
+	puts [table end]
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>

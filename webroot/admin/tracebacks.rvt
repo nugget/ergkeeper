@@ -1,0 +1,44 @@
+<?
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head "ErgKeeper: Recent Tracebacks"
+
+	::ergkeeper::require_login
+    ::ergkeeper::require_admin
+
+	puts [head "Recent Activities"]
+
+	puts [table start]
+	puts "<tr>"
+	foreach hdr {ID Timestamp User IP URL Site Error} {
+		puts "<th>$hdr</th>"
+	}
+	puts "</tr>"
+
+	if {[info exists response(limit)]} {
+		sanitize_number response(limit)
+	} else {
+		set response(limit) 10
+	}
+
+	set sql "SELECT * FROM site_errors ORDER BY id DESC LIMIT $response(limit)"
+
+	pg_select $::db $sql buf {
+		puts "<tr [rowclass row]>"
+		puts "<td align=\"right\"><a href=\"view/site_errors/$buf(id)\">$buf(id)</a></td>"
+		puts "<td align=\"right\">[clock format [clock scan $buf(added) -gmt 1] -format "%a, %d-%b-%Y %H:%M %Z" -timezone ":America/Chicago"]</td>"
+		puts "<td align=\"right\"><a href=\"view/users/$buf(user_id)\">$buf(user_id)</a></td>"
+		puts "<td>$buf(ip)</td>"
+		puts "<td><a href=\"$buf(url)\">$buf(url)</a></td>"
+		puts "<td>$buf(vhost)</td>"
+		puts "<td><pre>[escape_sgml_chars [string range [lindex [split $buf(error) "\n"] 0] 0 80]]</pre></td>"
+		puts "</tr>"
+	}
+
+	puts [table end]
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>

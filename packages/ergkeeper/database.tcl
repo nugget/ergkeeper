@@ -81,7 +81,7 @@ proc sanitize_alphanum {varname} {
 	upvar 1 $varname buf
 	set oldbuf $buf
 
-	set buf [regsub -all -nocase {[^A-Za-z0-9]} $buf ""]
+	set buf [regsub -all -nocase {[^A-Za-z0-9_]} $buf ""]
 
 	if {$oldbuf ne $buf} {
 		return 1

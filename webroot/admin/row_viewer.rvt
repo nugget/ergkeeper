@@ -34,6 +34,9 @@
 	puts [table start]
 	pg_select $::db $sql buf {
 		foreach f $buf(.headers) {
+			if {$f eq "error"} {
+				set buf($f) "<pre>[escape_sgml_chars $buf($f)]</pre>"
+			}
 			puts "<tr><th>$f</th>"
 			puts "<td>$buf($f)</td>"
 			puts "</tr>"

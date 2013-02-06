@@ -1,3 +1,5 @@
+package require Rivet
+
 proc opt_bool {item} {
 	set retval 0
 
