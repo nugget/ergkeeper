@@ -77,4 +77,33 @@ proc load_config {} {
 	}
 }
 
+proc sanitize_alphanum {varname} {
+	upvar 1 $varname buf
+	set oldbuf $buf
+
+	set buf [regsub -all -nocase {[^A-Za-z0-9]} $buf ""]
+
+	if {$oldbuf ne $buf} {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc sanitize_number {varname} {
+	upvar 1 $varname buf
+	set oldbuf $buf
+
+	if {![regexp {^[0-9.\+\-]+$} $buf]} {
+		set buf "NULL"
+	}
+
+	if {$oldbuf ne $buf} {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+
 package provide ergkeeper 1.0
