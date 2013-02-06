@@ -83,6 +83,7 @@ CREATE TABLE activities (
 	notes varchar,
 	raw varchar,
 	version varchar,
+	splits varchar,
 	PRIMARY KEY(id)
 );
 GRANT ALL ON activities_id_seq TO c2rkwww;
