@@ -19,5 +19,9 @@ Options ExecCGI FollowSymLinks
 RewriteEngine On
 RewriteBase /
 
+RewriteRule ^fix$          /diagnose.rvt [L,QSA]
+RewriteRule ^fix/results$  /diagnose.rvt?set=1 [L,QSA]
+
 RewriteRule ^([^\.\?]+[^\/])$	$1.rvt		[QSA]
+
 </IfModule>

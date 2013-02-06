@@ -1,0 +1,49 @@
+<?
+	package require ergkeeper
+
+	unset -nocomplain response
+	load_response
+
+	if {![info exists response(set)]} {
+		cookie set ek_cookie_test 1 -domain ergkeeper.com -path "/" -days 1 -secure 0
+		headers redirect "http://[apache_info virtual]/fix/results"
+		::ergkeeper:page_term
+	}
+	cookie set ek_cookie_test 1 -domain ergkeeper.com -path "/" -days 1 -secure 0
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head
+
+	load_cookies ergcookies
+
+	puts [head "Session Diagnostics"]
+
+	puts "<ul>"
+	puts "<li>Your browser is [env HTTP_USER_AGENT]</li>"
+	foreach varname {HTTP_VIA HTTP_FROM HTTP_FORWARDED HTTP_X_FORWARDED_FROM HTTP_X_FORWARDED HTTP_X_FORWARDED_FOR HTTP_CLIENT_IP CLIENT_IP HTTP_X_BLUECOAT_VIA} {
+		if {[env $varname] != ""} {
+			append proxyinfo "<br />- [string map {http_ ""} [string tolower $varname]]: [env $varname]"
+		}
+	}
+	if {[info exists proxyinfo]} {
+	    puts "<li>You may be behind a proxy$proxyinfo</li>"
+	} else {
+		puts "<li>You do not appear to be behind a proxy server</li>"
+	}
+	puts "<li>Your public IP address is [env REMOTE_ADDR]</li>"
+	if {[info exists ::user(id)]} {
+	    puts "<li>You are currently logged in.</li>"
+    	puts "<li>Your user id is $::user(id)</li>"
+	} else {
+		puts "<li>You are not logged in.</li>"
+	}
+	if {[info exists ergcookies(ek_cookie_test)]} {
+		puts "<li>You can accept cookies from ErgKeeper</li>"
+	} else {
+		puts "<li>You have cookies disabled</li>"
+	}
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>
