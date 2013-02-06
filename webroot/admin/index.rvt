@@ -1,5 +1,4 @@
 <?
-	package forget ergkeeper
 	package require ergkeeper
 
 	proc dwmtl_row {title table tsfield {where "1=1"}} {
