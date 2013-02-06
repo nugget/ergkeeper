@@ -1,0 +1,10 @@
+Options ExecCGI FollowSymLinks
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /errors/
+
+RewriteRule ^(\d+)$ index.rvt?code=$1		[QSA]
+RewriteRule ^([^\.\?]+[^\/])$	$1.rvt		[QSA]
+
+</IfModule>

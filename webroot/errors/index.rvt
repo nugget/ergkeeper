@@ -1,0 +1,48 @@
+<?
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+
+	if {[info exists response(code)]} {
+		sanitize_number response(code)
+		set code $response(code)
+	} else {
+		set code 500
+	}
+
+	headers numeric $code
+	headers set Cache-Control "no-cache,max-age=0"
+	headers set Expires [clock format [clock seconds] -format "%a, %d %b %Y %H:%M:%S %Z" -gmt 1]
+
+
+	set title(400)	"Bad Request"
+	set snark(400)	"Say what?"
+
+	set title(401)	"Unauthorized"
+	set snark(401)	"Please stay on the marked trails"
+
+	set title(403)	"Forbidden"
+	set snark(403)	"Locked doors keep honest people honest"
+
+	set title(404)	"Not Found"
+	set snark(404)	"Either I am confused or you are."
+
+
+	if {[info exists title($code)]} {
+		set my_title $title($code)
+		set my_snark $snark($code)
+	} else {
+		set my_title "Unknown Error"
+		set my_snark "I am totally confused"
+	}
+
+	::ergkeeper::page_head $my_title
+
+	puts [head $my_title]
+
+	puts "<p>$my_snark</p>"
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+?>

@@ -1,9 +1,9 @@
 Options ExecCGI FollowSymLinks
 
-# ErrorDocument 400 /errors/400.php
-# ErrorDocument 401 /errors/401.php
-# ErrorDocument 403 /errors/403.php
-# ErrorDocument 404 /errors/404.php
+ErrorDocument 400 /errors/400
+ErrorDocument 401 /errors/401
+ErrorDocument 403 /errors/403
+ErrorDocument 404 /errors/404
 
 <Files "*.inc">
  Order Deny,Allow
