@@ -110,3 +110,11 @@ th {
 	border-left: 1px solid black;
 	border-bottom: 2px solid black;
 }
+pre.traceback {
+	margin: 20px;
+	padding: 2em;
+	background-color: #dfdfdf;
+	border: 1px solid black;
+	font-family: monaco, courier, courier new;
+	font-size: x-small;
+}

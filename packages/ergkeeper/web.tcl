@@ -141,6 +141,44 @@ namespace eval ::ergkeeper {
 			}
 		}
 	}
+
+	proc site_error {{extra_message ""}} {
+		catch {log_error}
+		headers numeric 500
+
+		if {[opt_bool show_tracebacks] && [info exists ::errorInfo]} {
+			puts "<h1>Rivet Error</h1>"
+			puts "<pre class=\"traceback\">$::errorInfo</pre>"
+		}
+
+		puts "<p>I'm sorry, but an error has occurred.</p>"
+		puts "<p>$extra_message</p>"
+		puts "<p>Help can be reached at support@ergkeeper.com or you can open an issue on the"
+		puts "<a href=\"https://github.com/nugget/ergkeeper/issues\">issue tracker</a>.</p>"
+
+		return
+	}
+
+	proc log_error {} {
+		unset -nocomplain field_list data_list
+
+		set ins(vhost)			[apache_info virtual]
+		set ins(ip)				[env REMOTE_ADDR]
+		set ins(url)			[env REQUEST_URI]
+		set ins(referer)		[env HTTP_REFERER]
+		set ins(user_agent)		[env HTTP_USER_AGENT]
+		if {[info exists ::user(id)]} {
+			set ins(user_id) $::user(id)
+		}
+
+		if {[info exists ::errorInfo]} {
+			set ins(error)		$::errorInfo
+		} else {
+			set ins(error)		"UNKNOWN"
+		}
+
+		sql_insert_from_array site_errors ins
+	}
 }
 
 proc table {command {id "default"}} {

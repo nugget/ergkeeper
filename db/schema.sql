@@ -102,3 +102,18 @@ CREATE TABLE logs (
 GRANT ALL ON logs_id_seq TO c2rkwww;
 GRANT SELECT,INSERT ON logs TO c2rkwww;
 CREATE TRIGGER logs BEFORE UPDATE ON activities FOR EACH ROW EXECUTE PROCEDURE onupdate_changed();
+
+CREATE TABLE site_errors (
+	id serial NOT NULL,
+    added timestamp(0) without time zone NOT NULL DEFAULT (current_timestamp at time zone 'utc'),
+	user_id integer REFERENCES users(id),
+	ip inet NOT NULL,
+	url varchar NOT NULL,
+	error varchar,
+	vhost varchar NOT NULL,
+	referer varchar NOT NULL,
+	user_agent varchar,
+	PRIMARY KEY(id)
+);
+GRANT ALL ON site_errors_id_seq TO c2rkwww;
+GRANT SELECT,INSERT ON site_errors TO c2rkwww;
