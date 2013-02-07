@@ -16,11 +16,14 @@
 			to ErgKeeper.
 		</p>
 		<p>
-			ErgKeeper does have access to your RunKeeper profile and basic information.
+			ErgKeeper does have access to your RunKeeper profile and basic information,
+			as well as any fitness activities which you posted through this service.
 		</p>
 
 		<p>
-			<i>Explain data retention policy once it's implemented</i>
+			ErgKeeper retains a copy of all workouts that you upload in order to keep track
+			of which workouts you have previously posted to the RunKeeper site and which
+			you still need to post.
 		</p>
 
 		<p>
