@@ -134,6 +134,8 @@ namespace eval ::ergkeeper {
 
 	proc require_login {} {
 		if {![info exists ::user(id)]} {
+			puts [head "Login Required"]
+			puts "<p>This feature requires you to be logged in before it can work, sorry.</p>"
 			puts [runkeeper_login_button]
 			page_foot
 			page_term

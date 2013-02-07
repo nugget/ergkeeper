@@ -5,6 +5,8 @@
 	::ergkeeper::page_response
 	::ergkeeper::page_head "ErgKeeper: Activity Chooser"
 
+	::ergkeeper::require_login
+
 	if {[info exists response(weeks)] && [string is integer $response(weeks)]} {
 		set weeks $response(weeks)
 		set title "$response(weeks) Weeks"
@@ -24,7 +26,6 @@
 		lappend whereclauses "posted IS NULL"
 	}
 
-	::ergkeeper::require_login
 
 	puts [head "Unposted Activities from the past $title"]
 
