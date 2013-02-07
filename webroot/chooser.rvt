@@ -13,6 +13,17 @@
 		set title "Week"
 	}
 
+	unset -nocomplain whereclauses
+	lappend whereclauses "start_time >= current_date - '$weeks week'::interval"
+	lappend whereclauses "user_id = $::user(id)"
+
+	if {[info exists response(resubmit)]} {
+		set resubmit 1
+	} else {
+		set resubmit 0
+		lappend whereclauses "posted IS NULL"
+	}
+
 	::ergkeeper::require_login
 
 	puts [head "Unposted Activities from the past $title"]
@@ -23,14 +34,13 @@
 	}
 	puts "<p>[join $opts " &middot; "]</p>"
 
-
 	form myform -defaults response -method post -name chooser -action post
 	myform start
 
 	puts [table start]
 	puts "<tr><th>Sel</th><th>User</th><th colspan=\"2\">Date</th><th>Time</th><th>Duration</th><th>Notes</th></tr>"
 
-	pg_select $::db "SELECT *, (duration::varchar||' seconds')::interval as dur_interval FROM activities WHERE start_time >= current_date - '$weeks week'::interval AND user_id = $::user(id) AND posted IS NULL ORDER BY name, start_time" buf {
+	pg_select $::db "SELECT *, (duration::varchar||' seconds')::interval as dur_interval FROM activities WHERE [join $whereclauses " AND "] ORDER BY name, start_time" buf {
 		puts "<tr [rowclass row]>"
 		puts "<td>"
 		myform checkbox sel_$buf(id)
