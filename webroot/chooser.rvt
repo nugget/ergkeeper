@@ -37,6 +37,10 @@
 	form myform -defaults response -method post -name chooser -action post
 	myform start
 
+	if {[string is true -strict $resubmit]} {
+		myform hidden resubmit -value 1
+	}
+
 	puts [table start]
 	puts "<tr><th>Sel</th><th>User</th><th colspan=\"2\">Date</th><th>Time</th><th>Duration</th><th>Notes</th></tr>"
 
