@@ -164,7 +164,7 @@ namespace eval ::ergkeeper {
 		return
 	}
 
-	proc log_error {} {
+	proc log_error {{error_text ""}} {
 		unset -nocomplain field_list data_list
 
 		set ins(vhost)			[apache_info virtual]
@@ -181,11 +181,10 @@ namespace eval ::ergkeeper {
 		} else {
 			set ins(error)		"UNKNOWN"
 		}
-
-		if {[info exists ::user(admin)] && [string is true -strict $::user(admin)]} {
-			# Don't log errors to database if it's an admin
-			return
+		if {$error_text ne ""} {
+			set ins(error)		$error_text
 		}
+
 		sql_insert_from_array site_errors ins
 	}
 }
