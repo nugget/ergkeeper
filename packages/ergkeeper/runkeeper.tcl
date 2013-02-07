@@ -27,7 +27,7 @@ proc runkeeper_content_type {method} {
 
 proc runkeeper_request {method {token ""} {body ""}} {
 	set success		0
-	set details		"Unknown"
+	array set details {err "Unknown"}
 	array set reponse {}
 
 	if {$token == "" && [info exists ::user(runkeeper_oauth_token)] && $::user(runkeeper_oauth_token) != ""} {
@@ -35,7 +35,8 @@ proc runkeeper_request {method {token ""} {body ""}} {
 	}
 
 	if {$token == ""} {
-		return [list $success [array get response] "No token available"]
+		set details(err) "No token available"
+		return [list $success [array get response] [array get details]]
 	}
 
 	set uri "$::config(rkapi_base_url)$method"
@@ -78,7 +79,7 @@ proc runkeeper_request {method {token ""} {body ""}} {
 	if {$ncode >= 200 && $ncode <= 399} {
 		set success 1
 	} else {
-		log_error "runkeeper_request error:\ndetails: [array get details]\nresponse: [array get response]"
+		::ergkeeper::log_error "runkeeper_request error:\ndetails: [array get details]\nresponse: [array get response]"
 	}
 
 	return [list $success [array get response] [array get details]]
@@ -91,10 +92,10 @@ proc runkeeper_bind_user {token} {
 	}
 
 	if {![info exists user_id]} {
-		lassign [runkeeper_request user $token] success arrayinfo details
-		array set ::rkuser $arrayinfo
-		lassign [runkeeper_request profile $token] success arrayinfo details
-		array set ::rkprofile $arrayinfo
+		lassign [runkeeper_request user $token] success array_data details_data
+		array set ::rkuser $array_data
+		lassign [runkeeper_request profile $token] success array_data details_data
+		array set ::rkprofile $array_data
 
 		pg_select $::db "SELECT id FROM users WHERE id = [pg_quote $::rkuser(userID)]" buf {
 			set sql "UPDATE users SET runkeeper_profile = [pg_quote [array get ::rkprofile]], runkeeper_userinfo = [pg_quote [array get ::rkuser]] WHERE id = $buf(id)"
@@ -120,22 +121,21 @@ proc runkeeper_bind_user {token} {
 
 proc runkeeper_json_post {method body} {
 	#puts "<h1>JSON Post</h1><pre>$body</pre>"
-	lassign [runkeeper_request $method "" $body] success array_data details
-	#puts "<p>$success<br/>$array_data<br/>$details</p>"
+	lassign [runkeeper_request $method "" $body] success array_data details_data
+	#puts "<p>$success<br/>$array_data<br/>$details_data</p>"
 
-	return [list $success $array_data $details]
+	return [list $success $array_data $details_data]
 }
 
 proc runkeeper_post_activity {id} {
 	set success 0
-	set details ""
-	set ::config(debug) 0
+	array set details {}
 
 	load_response
 
 	pg_select $::db "SELECT * FROM activities WHERE id = $id" buf {
 		if {![info exists response(resubmit)] && $buf(posted) != ""} {
-			set details "Duplicate (already posted)"
+			set details(err) "Duplicate (already posted)"
 		} else {
 			set yo [yajl create #auto]
 			$yo map_open
@@ -172,35 +172,35 @@ proc runkeeper_post_activity {id} {
 			}
 
 			$yo map_close
+			set payload [$yo get]
+			$yo delete
 
 			if {[opt_bool debug]} {
 				puts "<code>[$yo get]</code>"
 				$yo delete
 				return
 			}
-			lassign [runkeeper_json_post $::rkuser(fitness_activities) [$yo get]] success array_data details_data
+			lassign [runkeeper_json_post $::rkuser(fitness_activities) $payload] success array_data details_data
 
 			unset -nocomplain details headers
 			array set details $details_data
 			array set headers $details(headers)
+			unset -nocomplain details(headers)
 
+			set error_text "json post error (activity_id $buf(id)):\n$payload\ndetails: [array get details]\nheaders: [array get headers]\nrequest: [array get request]"
 			if {[string is true $success]} {
 				if {[info exists headers(Location)]} {
 					set sql "UPDATE activities SET runkeeper_uri = [pg_quote $headers(Location)] WHERE id = $id"
 					sql_exec $::db $sql
 				}
 			} else {
-				log_error "json post error:\n[$yo get]\ndetails: [array get details]\nheaders: [array get headers]"
-				puts "<p>RunKeeper Error:</p><pre>[$yo get]</pre>"
-				parray details
-				parray headers
+				::ergkeeper::log_error $error_text
+				puts "<p>RunKeeper Error</p>"
 			}
-
-			$yo delete
 		}
 	}
 
-	return [list $success $details_data]
+	return [list $success [array get details]]
 }
 
 proc c2log_line_type {buf delimeter} {
