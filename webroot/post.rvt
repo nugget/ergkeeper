@@ -14,9 +14,17 @@
 		}
 	}
 
+	unset -nocomplain whereclauses
+	lappend whereclauses "deleted IS NULL"
+	lappend whereclauses "user_id = $::user(id)"
+
+	if {![info exists response(resubmit)]} {
+		lappend whereclauses "posted IS NULL"
+	}
+
 	puts "<ol>"
 	if {[info exists idlist]} {
-		pg_select $::db "SELECT * FROM activities WHERE posted IS NULL AND deleted IS NULL AND id IN ([join $idlist ","])" buf {
+		pg_select $::db "SELECT * FROM activities WHERE [join $whereclauses " AND "] AND id IN ([join $idlist ","])" buf {
 			set id $buf(id)
 
 			if {[info exists response(notes_$id)] && $response(notes_$id) != ""} {
