@@ -1,4 +1,7 @@
 User-agent: *
-Disalllow: upload
-Disalllow: chooser
-Disalllow: auth_revoke
+Disallow: /upload
+Disallow: /chooser
+Disallow: /auth_revoke
+Disallow: /admin/
+Disallow: /login
+Disallow: /logout
