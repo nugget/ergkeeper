@@ -77,6 +77,8 @@ proc runkeeper_request {method {token ""} {body ""}} {
 
 	if {$ncode >= 200 && $ncode <= 399} {
 		set success 1
+	} else {
+		log_error "runkeeper_request error:\ndetails: [array get details]\nresponse: [array get response]"
 	}
 
 	return [list $success [array get response] [array get details]]
@@ -129,8 +131,10 @@ proc runkeeper_post_activity {id} {
 	set details ""
 	set ::config(debug) 0
 
+	load_response
+
 	pg_select $::db "SELECT * FROM activities WHERE id = $id" buf {
-		if {$buf(posted) != ""} {
+		if {![info exists response(resubmit)] && $buf(posted) != ""} {
 			set details "Duplicate (already posted)"
 		} else {
 			set yo [yajl create #auto]
@@ -186,6 +190,7 @@ proc runkeeper_post_activity {id} {
 					sql_exec $::db $sql
 				}
 			} else {
+				log_error "json post error:\n[$yo get]\ndetails: [array get details]\nheaders: [array get headers]"
 				puts "<p>RunKeeper Error:</p><pre>[$yo get]</pre>"
 				parray details
 				parray headers
