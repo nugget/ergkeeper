@@ -30,6 +30,11 @@
     ::ergkeeper::require_admin
 
 	puts [head $sql]
+
+	if {$response(table) eq "users"} {
+		puts "<p><a href=\"/admin/switch_user?user_id=$response(id)\">Test as this user</a></p>"
+	}
+
 	puts "<p>"
 	puts [table start]
 	pg_select $::db $sql buf {

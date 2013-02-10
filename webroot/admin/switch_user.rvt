@@ -1,0 +1,16 @@
+<?
+	package require ergkeeper
+
+	::ergkeeper::page_init
+	::ergkeeper::page_response
+	::ergkeeper::page_head
+	::ergkeeper::require_admin
+
+	sanitize_number   response(user_id)
+	set sql "UPDATE sessions SET user_id = $response(user_id) WHERE session = [pg_quote $::session(session)]"
+	sql_exec $::db $sql
+
+	::ergkeeper::page_foot
+	::ergkeeper::page_term
+
+?>
