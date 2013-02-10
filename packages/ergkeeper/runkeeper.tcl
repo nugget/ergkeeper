@@ -424,7 +424,7 @@ proc runkeeper_import_new_activities {user_id log} {
 			}
 
 			empty {
-				if {[info exists activity_id] && [info exists splitlist] && $spitlist ne ""} {
+				if {[info exists activity_id] && [info exists splitlist] && $splitlist ne ""} {
 					set sql "UPDATE activities SET splits = [pg_quote $splitlist] WHERE id = $activity_id"
 					sql_exec $::db $sql
 					if {[opt_bool debug]} {
