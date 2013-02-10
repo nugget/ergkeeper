@@ -410,17 +410,22 @@ proc runkeeper_import_new_activities {user_id log} {
 				set ss [scan $ss %d]
 				set mm [scan $mm %d]
 				set hh [scan $hh %d]
+
 				set split_seconds 0
 				if {$hh ne ""} {
 					incr split_seconds [expr 60*60*$hh]
 				}
-				incr split_seconds [expr 60*$mm]
-				incr split_seconds $ss
+				if {$ss eq "" || $mm eq ""} {
+					::ergkeeper::log_error "cannot parse split time:\n  $line\n  $split_time\n  $hh $mm $ss"
+				} else {
+					incr split_seconds [expr 60*$mm]
+					incr split_seconds $ss
 
-				#puts "<p>$line</p>"
-				#puts "<p>secs $split_seconds time $split_time - meters $split_meters - spm $split_spm - hr $split_hr - pace/500m $pace500 - cal $cal_hr - hr $avg_hr</p>"
-				incr incr_distance $split_meters
-				lappend splitlist [list timestamp $split_seconds distance $incr_distance heart_rate $split_hr]
+					#puts "<p>$line</p>"
+					#puts "<p>secs $split_seconds time $split_time - meters $split_meters - spm $split_spm - hr $split_hr - pace/500m $pace500 - cal $cal_hr - hr $avg_hr</p>"
+					incr incr_distance $split_meters
+					lappend splitlist [list timestamp $split_seconds distance $incr_distance heart_rate $split_hr]
+				}
 			}
 
 			empty {
