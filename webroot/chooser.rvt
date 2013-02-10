@@ -57,6 +57,7 @@
 		puts "<td align=\"right\">$buf(dur_interval)</td>"
 		puts "<td><input type=\"text\" name=\"notes_$buf(id)\" size=\"40\" value=\"$buf(notes)\"/></td>"
 		puts "</tr>"
+		incr displaycount
 	}
 
 	puts "<tr><td colspan=\"7\" align=\"center\" style=\"background-color: #dfdfdf;\">"
@@ -67,6 +68,24 @@
 
 	myform end
 	myform destroy
+
+	pg_select $::db "SELECT count(*) FROM activities WHERE user_id = $::user(id) AND posted IS NULL" buf {
+		if {![info exists displaycount] || $displaycount != $buf(count)} {
+			puts [head "Expecting to see more workouts?"]
+			puts "<p>"
+			puts "You have uploaded $buf(count) workouts to this site which have not been posted to"
+			puts "your RunKeeper account.  However, some of these workouts are older than the date"
+			puts "range selected above."
+			puts "</p>"
+			puts "<p>"
+			puts "The RunKeeper API does nut really support posting old activities, so if you post old"
+			puts "workouts they will all show up in your RunKeeper timeline as if you just completed them."
+			puts "They will be dated correctly for graphs and analysis, but it will spam your friends'"
+			puts "timelines.  You can upload the older workouts anyway, if you wish, by selecting a"
+			puts "longer time range at the top of this page."
+			puts "</p>"
+		}
+	}
 
 	::ergkeeper::page_foot
 	::ergkeeper::page_term
