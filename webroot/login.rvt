@@ -8,7 +8,12 @@
 
 	switch $response(state) {
 		runkeeper {
-			lassign [get_oauth_token_from_code $response(code)] success token details
+			if {[info exists response(error)]} {
+				set details "RunKeeper Error: $response(error)"
+				set success 0
+			} else {
+				lassign [get_oauth_token_from_code $response(code)] success token details
+			}
 
 			if {[string is true $success]} {
 				runkeeper_bind_user $token
@@ -33,7 +38,7 @@
 
 	::ergkeeper::page_head
 
-	puts "<h1>Unsuccessful Authentication</h1>"
+	puts [head "Unsuccessful Authentication"]
 	puts "<p>$details</p>"
 
 	::ergkeeper::page_foot
