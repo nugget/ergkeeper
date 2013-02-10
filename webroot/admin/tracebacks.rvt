@@ -8,7 +8,13 @@
 	::ergkeeper::require_login
     ::ergkeeper::require_admin
 
-	puts [head "Recent Activities"]
+	set whereclause [list "1=1"]
+	if {[info exists response(all)]} {
+		puts [head "All Tracebacks"]
+	} else {
+		puts [head "Recent Tracebacks"]
+		lappend whereclause "cleared IS NOT TRUE"
+	}
 
 	puts [table start]
 	puts "<tr>"
@@ -23,7 +29,8 @@
 		set response(limit) 10
 	}
 
-	set sql "SELECT * FROM site_errors ORDER BY id DESC LIMIT $response(limit)"
+
+	set sql "SELECT * FROM site_errors WHERE [join $whereclause " AND "] ORDER BY id DESC LIMIT $response(limit)"
 
 	pg_select $::db $sql buf {
 		puts "<tr [rowclass row]>"
@@ -38,6 +45,10 @@
 	}
 
 	puts [table end]
+
+	if {![info exists response(all)]} {
+		puts "<p><a href=\"?all=1\">Show all</a></p>"
+	}
 
 	::ergkeeper::page_foot
 	::ergkeeper::page_term
