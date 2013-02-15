@@ -12,7 +12,7 @@
 
 	puts [table start]
 	puts "<tr>"
-	foreach hdr {ID Added User Name Posted Notes Distance Version Splits} {
+	foreach hdr {ID Added User Name Posted Notes When Distance Version Splits} {
 		puts "<th>$hdr</th>"
 	}
 	puts "</tr>"
@@ -38,6 +38,7 @@
 			puts "<td>&nbsp;</td>"
 		}
 		puts "<td>$buf(notes)</td>"
+		puts "<td>[clock format [clock scan $buf(start_time) -gmt 1] -format "%d-%b-%Y %H:%M %Z" -timezone ":America/Chicago"]</td>"
 		puts "<td align=\"right\">$buf(total_distance)</td>"
 		puts "<td align=\"right\">$buf(version)</td>"
 		puts "<td align=\"right\">[llength $buf(splits)]</td>"
