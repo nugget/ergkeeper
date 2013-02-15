@@ -38,9 +38,10 @@
 	puts [dwmtl_row "Activity Uploads" activities added]
 	puts [dwmtl_row "Activity Posts" activities changed "posted IS NOT NULL"]
 	puts [dwmtl_row "Tracebacks" site_errors added]
+	puts [dwmtl_row "Archived Logs" logs added]
 	puts [table end]
 
-	set menu_items {"User List" users "Recent Activities" activities "Recent Tracebacks" tracebacks "RK App" "http://runkeeper.com/apps/moo/cow/44420"}
+	set menu_items {"User List" users "Recent Activities" activities "Recent Tracebacks" tracebacks "Recent Logs" logs "RK App" "http://runkeeper.com/apps/moo/cow/44420"}
 
 	puts "<br />"
 
