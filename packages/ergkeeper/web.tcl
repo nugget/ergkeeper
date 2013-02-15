@@ -223,6 +223,25 @@ namespace eval ::ergkeeper {
 
 		return $retbuf
 	}
+
+	proc admin_user_link {user_id} {
+		set retbuf ""
+
+		pg_select $::db "SELECT * FROM users WHERE id = $user_id" buf {
+			array set profile $buf(runkeeper_profile)
+			array set userinfo $buf(runkeeper_userinfo)
+
+			if {[string is true -strict $::user(admin)]} {
+				append retbuf "<a href=\"/admin/view/users/$buf(id)\">"
+			} else {
+				append retbuf "<a href=\"$profile(profile)\">"
+			}
+			append retbuf "$profile(name)"
+			append retbuf "</a>"
+		}
+
+		return $retbuf
+	}
 }
 
 proc table {command {id "default"}} {

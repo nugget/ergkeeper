@@ -29,7 +29,7 @@
 		puts "<tr [rowclass row]>"
 		puts "<td align=\"right\"><a href=\"view/activities/$buf(id)\">$buf(id)</a></td>"
 		puts "<td>[clock format [clock scan $buf(added) -gmt 1] -format "%d-%b-%Y %H:%M %Z" -timezone ":America/Chicago"]</td>"
-		puts "<td align=\"right\"><a href=\"view/users/$buf(user_id)\">$buf(user_id)</a></td>"
+		puts "<td>[::ergkeeper::admin_user_link $buf(user_id)]</a>"
 		puts "<td>$buf(name)</td>"
 		if {[info exists buf(posted)] && $buf(posted) ne ""} {
 			# puts "<td>[clock format [clock scan $buf(posted) -gmt 1] -format "%d-%b-%Y"]</td>"
