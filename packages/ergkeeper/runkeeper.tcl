@@ -416,7 +416,7 @@ proc runkeeper_import_new_activities {user_id log} {
 					incr split_seconds [expr 60*60*$hh]
 				}
 				if {$ss eq "" || $mm eq ""} {
-					::ergkeeper::log_error "cannot parse split time:\n  $line\n  $split_time\n  $hh $mm $ss"
+					#::ergkeeper::log_error "cannot parse split time:\n  $line\n  $split_time\n  $hh $mm $ss"
 				} else {
 					incr split_seconds [expr 60*$mm]
 					incr split_seconds $ss
