@@ -78,7 +78,7 @@
 			puts "range selected above."
 			puts "</p>"
 			puts "<p>"
-			puts "The RunKeeper API does nut really support posting old activities, so if you post old"
+			puts "The RunKeeper API does not really support posting old activities, so if you post old"
 			puts "workouts they will all show up in your RunKeeper timeline as if you just completed them."
 			puts "They will be dated correctly for graphs and analysis, but it will spam your friends'"
 			puts "timelines.  You can upload the older workouts anyway, if you wish, by selecting a"
