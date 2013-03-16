@@ -210,14 +210,14 @@ proc c2log_line_type {buf delimeter} {
 		return "empty"
 	}
 
-	if {[regexp {Log Data for:} $buf]} {
+	if {[regexp {(Log Data for:|Daten erfassen)} $buf]} {
 		return "newuser"
 	}
 
 	if {[regexp {Version (.+)} $buf]} {
 		return "version"
 	}
-	if {[regexp {(Concept2 Utility|Time of Day|Total Workout Results)} $buf]} {
+	if {[regexp {(Concept2 Utility|Time of Day|Total Workout Results|Trainingsergeb|Herzfequenz|Datum)} $buf]} {
 		return "header"
 	}
 
@@ -286,6 +286,9 @@ proc detect_delimeter {log} {
 		if {[regexp {Log Data for:(.)} $line _ seen_delimeter]} {
 			set delimeter $seen_delimeter
 		}
+		if {[regexp {Daten erfassen.+:(.)} $line _ seen_delimeter]} {
+			set delimeter $seen_delimeter
+		}
 	}
 
 	return "$delimeter"
@@ -332,7 +335,7 @@ proc runkeeper_import_new_activities {user_id log} {
 
 		if {[opt_bool debug]} {
 			incr linec
-			puts "$linec - $type - $line"
+			puts "$linec - $type - $line<br/>"
 		}
 		switch $type {
 			version {
