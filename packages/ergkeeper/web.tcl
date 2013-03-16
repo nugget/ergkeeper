@@ -228,8 +228,8 @@ namespace eval ::ergkeeper {
 		set retbuf ""
 
 		pg_select $::db "SELECT * FROM users WHERE id = $user_id" buf {
-			array set profile $buf(runkeeper_profile)
-			array set userinfo $buf(runkeeper_userinfo)
+			array set profile  [runkeeper_profile_to_array $buf(runkeeper_profile)]
+			array set userinfo [runkeeper_userinfo_to_array $buf(runkeeper_userinfo)]
 
 			if {[string is true -strict $::user(admin)]} {
 				append retbuf "<a href=\"/admin/view/users/$buf(id)\">"

@@ -17,8 +17,8 @@
 	                             (SELECT count(*) FROM activities a WHERE a.user_id = u.id AND posted IS NOT NULL) as uploads
 					 FROM users u ORDER BY added DESC" buf {
 		unset -nocomplain profile userinfo
-		array set profile $buf(runkeeper_profile)
-		array set userinfo $buf(runkeeper_userinfo)
+		array set profile  [runkeeper_profile_to_array $buf(runkeeper_profile)]
+		array set userinfo [runkeeper_userinfo_to_array $buf(runkeeper_userinfo)]
 
 		puts "<tr [rowclass row]>"
 		puts "<td>"

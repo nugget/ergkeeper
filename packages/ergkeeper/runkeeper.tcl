@@ -449,4 +449,28 @@ proc runkeeper_import_new_activities {user_id log} {
 	return [list $workouts_loaded $workouts_in_file]
 }
 
+proc runkeeper_profile_to_array {hashdata} {
+	array set buf $hashdata
+	if {[info exists buf(profile)] && ![info exists buf(name)]} {
+		if {[regexp {([^\/]+)$} $buf(profile) _ uid]} {
+			if {[ctype digit $uid]} {
+				set buf(name) "User $uid"
+			} else {
+				set buf(name) "$uid"
+			}
+		}
+	}
+	foreach mandatory {name} {
+		if {![info exists buf($mandatory)] || $buf($mandatory) eq ""} {
+			set buf($mandatory) Unknown
+		}
+	}
+	return [array get buf]
+}
+
+proc runkeeper_userinfo_to_array {hashdata} {
+	array set buf $hashdata
+	return [array get buf]
+}
+
 package provide ergkeeper 1.0
