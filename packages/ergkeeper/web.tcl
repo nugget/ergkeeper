@@ -1,5 +1,6 @@
 package require uuid
 package require form
+package require macnugget
 
 namespace eval ::ergkeeper {
 	proc page_init {} {
@@ -72,6 +73,7 @@ namespace eval ::ergkeeper {
 
 		if {[info exists ::config(analytics_account)]} {
 			puts [analytics_javascript]
+			puts [quantcast]
 		}
 		puts "</html>"
 	}
@@ -297,4 +299,3 @@ proc apache_info {type} {
 }
 
 package provide ergkeeper 1.0
-
