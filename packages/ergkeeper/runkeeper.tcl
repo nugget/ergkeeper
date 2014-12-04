@@ -46,6 +46,7 @@ proc runkeeper_request {method {token ""} {body ""}} {
 
 	::http::config -useragent "ErgKeeper/1.0"
 	::http::register https 443 ::tls::socket
+	::tls::init -ssl2 0 -ssl3 0 -tls1 1
 
 	if {$body != ""} {
     	set fp [::http::geturl $uri -timeout 15000 -headers $headers -query $body -type [runkeeper_content_type $method]]

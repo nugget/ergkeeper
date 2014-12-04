@@ -12,6 +12,7 @@ proc get_oauth_token_from_code {code} {
 	set details	""
 
 	::http::register https 443 ::tls::socket
+	::tls::init -ssl2 0 -ssl3 0 -tls1 1
 
 	set query [::http::formatQuery grant_type authorization_code code $code client_id $::config(rkapi_client_id) client_secret $::config(rkapi_client_secret) redirect_uri "$::config(base_url)login"]
 
