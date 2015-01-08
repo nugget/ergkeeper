@@ -2,6 +2,7 @@
 	package require ergkeeper
 
 	::ergkeeper::page_init
+	::ergkeeper::page_response
 
 	if {[info exists ::session(session)]} {
 		set sql "UPDATE sessions SET deleted = current_timestamp at time zone 'utc' WHERE session = [pg_quote $::session(session)]"
@@ -12,9 +13,13 @@
 
 	::ergkeeper::page_head
 
-	puts "<h1>Logout Successful</h1>"
-
-	puts "<p>You have been successfully logged out of the ErgKeeper site</p>"
+	if {[info exists response(reason)]} {
+		puts "<h1>Session Error</h1>"
+		puts "<p>There was a problem loading your profile information from RunKeeper</p>"
+	} else {
+		puts "<h1>Logout Successful</h1>"
+		puts "<p>You have been successfully logged out of the ErgKeeper site</p>"
+	}
 
 	::ergkeeper::page_foot
 

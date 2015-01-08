@@ -5,7 +5,7 @@ package require macnugget
 namespace eval ::ergkeeper {
 	proc page_init {} {
 		set ::db [dbconnect ergDB]
-		unset -nocomplain ::session ::user
+		unset -nocomplain ::session ::user ::rkprofile
 
 		load_config
 		array set ::session [get_session]
@@ -86,10 +86,21 @@ namespace eval ::ergkeeper {
 				array set ::user [array get buf {[a-z]*}]
 
 				if {[info exists ::user(runkeeper_oauth_token)]} {
+					unset -nocomplain ::rkuser
+
 			        lassign [runkeeper_request user] success arrayinfo details
-			        array set ::rkuser $arrayinfo
+					if {[string is true -strict $success]} {
+						array set ::rkuser $arrayinfo
+					}
+
 			        lassign [runkeeper_request profile] success arrayinfo details
-			        array set ::rkprofile $arrayinfo
+					if {[string is true -strict $success]} {
+					    array set ::rkprofile $arrayinfo
+					}
+
+					if {![array exists ::rkuser]} {
+						headers redirect "http://[apache_info virtual]/logout?reason=rkerror
+					}
 				}
 			}
 		}
