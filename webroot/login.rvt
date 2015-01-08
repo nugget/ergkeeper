@@ -18,6 +18,9 @@
 			if {[string is true $success]} {
 				runkeeper_bind_user $token
 
+				unset -nocomplain ::session
+				array set ::session [::ergkeeper::get_session]
+
 				headers set Location http://ergkeeper.com/moocow
 
 				::ergkeeper::page_head
