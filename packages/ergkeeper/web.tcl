@@ -99,7 +99,7 @@ namespace eval ::ergkeeper {
 					}
 
 					if {![array exists ::rkuser]} {
-						headers redirect "http://[apache_info virtual]/logout?reason=rkerror
+						headers redirect "http://[apache_info virtual]/logout?reason=rkerror"
 					}
 				}
 			}
