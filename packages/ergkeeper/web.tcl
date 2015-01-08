@@ -3,12 +3,14 @@ package require form
 package require macnugget
 
 namespace eval ::ergkeeper {
-	proc page_init {} {
+	proc page_init {args} {
 		set ::db [dbconnect ergDB]
 		unset -nocomplain ::session ::user ::rkprofile
 
 		load_config
-		array set ::session [get_session]
+		if {[lsearch -exact {nosession} $args] < 0} {
+			array set ::session [get_session]
+		}
 	}
 
 	proc page_term {} {
@@ -98,9 +100,6 @@ namespace eval ::ergkeeper {
 					    array set ::rkprofile $arrayinfo
 					}
 
-					if {![array exists ::rkuser]} {
-						headers redirect "http://[apache_info virtual]/logout?reason=rkerror"
-					}
 				}
 			}
 		}
@@ -254,6 +253,13 @@ namespace eval ::ergkeeper {
 		}
 
 		return $retbuf
+	}
+
+	proc redirect {location} {
+		headers set Location $location
+		headers numeric 302
+
+		::ergkeeper::page_term
 	}
 }
 

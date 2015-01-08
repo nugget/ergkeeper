@@ -80,7 +80,12 @@ proc runkeeper_request {method {token ""} {body ""}} {
 	if {$ncode >= 200 && $ncode <= 399} {
 		set success 1
 	} else {
-		::ergkeeper::log_error "runkeeper_request error:\ndetails: [array get details]\nresponse: [array get response]"
+		if {[info exists response(reason)] && $response(reason) eq "Revoked"} {
+			::ergkeeper::log_error "runkeeper access revoked:\ndetails: [array get details]\nresponse: [array get response]"
+			::ergkeeper::redirect "http://[apache_info virtual]/logout?reason=revoked"
+		} else {
+			::ergkeeper::log_error "runkeeper_request error:\ndetails: [array get details]\nresponse: [array get response]"
+		}
 	}
 
 	return [list $success [array get response] [array get details]]
