@@ -34,7 +34,7 @@
 		</p>
 		<ol>
 	}
-	puts "<li>Export your workout data from the PM4 monitor using the the <a href=\"http://www.concept2.com/us/service/software/c2u/\">Concept2 Utility</a></li>"
+	puts "<li>Export your workout data from the PM4 monitor using the the <a href=\"http://www.concept2.com/service/software/concept2-utility\">Concept2 Utility</a></li>"
 	puts "<li>Upload the log file export (LogData.CSV) to this website</li>"
 	puts "<li>Choose which workouts you wish to post to RunKeeper</li>"
 	puts "<li>Click &#8220;go&#8221; and let ErgKeeper do all the work</li>"
