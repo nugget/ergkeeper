@@ -25,6 +25,9 @@
 				puts "<h1>Session Error</h1>"
 				puts "<p>There was a problem loading your profile information from RunKeeper</p>"
 			}
+
+			puts "<p>Help can be reached at support@ergkeeper.com or you can open an issue on the"
+			puts "<a href=\"https://github.com/nugget/ergkeeper/issues\">issue tracker</a>.</p>"
 		}
 	} else {
 		puts "<h1>Logout Successful</h1>"
