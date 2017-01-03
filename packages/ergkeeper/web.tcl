@@ -84,7 +84,7 @@ namespace eval ::ergkeeper {
 		array set ::user {}
 
 		if {[info exists id] && $id != "" && [ctype digit $id]} {
-			pg_select $::db "SELECT * FROM users WHERE id = $id" buf {
+			pg_select $::db "SELECT * FROM users WHERE deleted IS NULL AND id = $id" buf {
 				array set ::user [array get buf {[a-z]*}]
 
 				if {[info exists ::user(runkeeper_oauth_token)]} {
@@ -239,7 +239,7 @@ namespace eval ::ergkeeper {
 	proc admin_user_link {user_id} {
 		set retbuf ""
 
-		pg_select $::db "SELECT * FROM users WHERE id = $user_id" buf {
+		pg_select $::db "SELECT * FROM users WHERE deleted IS NULL AND id = $user_id" buf {
 			array set profile  [runkeeper_profile_to_array $buf(runkeeper_profile)]
 			array set userinfo [runkeeper_userinfo_to_array $buf(runkeeper_userinfo)]
 

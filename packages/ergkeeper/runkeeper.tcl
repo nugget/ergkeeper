@@ -93,7 +93,7 @@ proc runkeeper_request {method {token ""} {body ""}} {
 
 proc runkeeper_bind_user {token} {
 
-	pg_select $::db "SELECT * FROM users WHERE runkeeper_oauth_token = [pg_quote $token]" buf {
+	pg_select $::db "SELECT * FROM users WHERE deleted IS NULL AND runkeeper_oauth_token = [pg_quote $token]" buf {
 		set user_id $buf(id)
 	}
 
@@ -103,7 +103,7 @@ proc runkeeper_bind_user {token} {
 		lassign [runkeeper_request profile $token] success array_data details_data
 		array set ::rkprofile $array_data
 
-		pg_select $::db "SELECT id FROM users WHERE id = [pg_quote $::rkuser(userID)]" buf {
+		pg_select $::db "SELECT id FROM users WHERE deleted IS NULL AND id = [pg_quote $::rkuser(userID)]" buf {
 			set sql "UPDATE users SET runkeeper_profile = [pg_quote [array get ::rkprofile]], runkeeper_userinfo = [pg_quote [array get ::rkuser]] WHERE id = $buf(id)"
 			sql_exec $::db $sql
 			set user_id $buf(id)
