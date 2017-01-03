@@ -55,18 +55,18 @@ proc set_session_token {site token} {
 }
 
 proc remove_by_token {token {purge 0}} {
-	set sql "SELECT * FROM users WHERE deleted IS NULL AND runkeeper_oauth_token = [pg_quote $token]"
+	set sql "SELECT * FROM users WHERE runkeeper_oauth_token = [pg_quote $token]"
 
 	pg_select $::db $sql buf {
-		set sql "UPDATE users SET deleted = current_timestamp at time zone 'utc' WHERE id = $buf(id)"
-		sql_exec $::db $sql
-
-		if {0 && [string is true -strict $purge]} {
-			foreach table {activities logs sessions site_errors} {
-				set sql "DELETE FROM $table WHERE user_id = $buf(id)"
-				sql_exec $::db $sql
-			}
+		# set sql "UPDATE users SET deleted = current_timestamp at time zone 'utc' WHERE id = $buf(id)"
+		#
+		foreach table {activities logs sessions site_errors} {
+			set sql "DELETE FROM $table WHERE user_id = $buf(id)"
+			sql_exec $::db $sql
 		}
+
+		set sql "DELETE FROM users WHERE id = $buf(id)"
+		sql_exec $::db $sql
 	}
 }
 
