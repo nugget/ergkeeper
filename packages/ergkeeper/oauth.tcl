@@ -41,7 +41,7 @@ proc get_oauth_token_from_code {code} {
 proc set_session_token {site token} {
 	set field "${site}_oauth_token"
 
-	pg_select $::db "SELECT * FROM users WHERE $field = [pg_quote $token]" buf {
+	pg_select $::db "SELECT * FROM users WHERE deleted IS NULL AND $field = [pg_quote $token]" buf {
 		set user_id $buf(id)
 	}
 
@@ -52,6 +52,22 @@ proc set_session_token {site token} {
 
 	set sql "UPDATE sessions SET user_id = $user_id WHERE session = [pg_quote $::session(session)]"
 	sql_exec $::db $sql
+}
+
+proc remove_by_token {token {purge 0}} {
+	set sql "SELECT * FROM users WHERE deleted IS NULL AND runkeeper_oauth_token = [pg_quote $token]"
+
+	pg_select $::db $sql buf {
+		set sql "UPDATE users SET deleted = current_timestamp at time zone 'utc' WHERE id = $buf(id)"
+		sql_exec $::db $sql
+
+		if {0 && [string is true -strict $purge]} {
+			foreach table {activities logs sessions site_errors} {
+				set sql "DELETE FROM $table WHERE user_id = $buf(id)"
+				sql_exec $::db $sql
+			}
+		}
+	}
 }
 
 package provide ergkeeper 1.0
