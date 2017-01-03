@@ -5,6 +5,25 @@
 	::ergkeeper::page_response
 	::ergkeeper::page_head
 
+	if {[info exists response(access_token)]} {
+		set title "Authentication Revoked"
+		set details "Your ErgKeeper account has been deleted"
+
+		if {[info exists response(delete_health)] && [string is true -strict $response(delete_health)]} {
+			set purge 1
+			append details " and all activity records have been removed."
+		} else {
+			set purge 0
+		}
+
+		remove_by_token $response(access_token) $purge
+	} else {
+		set title "I am confused"
+		set details "A confusing request to revoke access was sent and ignored"
+	}
+
+	puts [head $title]
+	puts "<p>$details</p>"
 
 	::ergkeeper::page_foot
 	::ergkeeper::page_term
